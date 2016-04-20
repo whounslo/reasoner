@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<rdf:RDF
+  xmlns     = "http://reasoner.sourceforge.net/disease#"
+  xml:base  = "http://reasoner.sourceforge.net/disease#"
+  xmlns:dis = "http://reasoner.sourceforge.net/disease#"
+  xmlns:owl = "http://www.w3.org/2002/07/owl#"
+  xmlns:rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs= "http://www.w3.org/2000/01/rdf-schema#">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:comment>
+      Medicine: abnormalities of structure (bronchi, larynx).
+    </rdfs:comment>
+  </owl:Ontology>
+
+  <rdfs:Datatype rdf:about="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+
+  <rdfs:Datatype rdf:about="http://reasoner.sourceforge.net/reasoner#true"/>
+
+  <rdfs:Datatype rdf:about="http://reasoner.sourceforge.net/reasoner#false"/>
+
+  <rdfs:Datatype rdf:about="#abnormalityDurations"/>
+
+  <owl:Class rdf:ID="MicroOrganism"/>
+
+  <owl:DatatypeProperty rdf:ID="infected">
+    <rdfs:domain rdf:resource="#BodyPart"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="BodyPart"/>
+
+  <owl:DatatypeProperty rdf:ID="abnormalityDuration">
+    <rdfs:domain rdf:resource="#AbnormalBodyPart"/>
+    <rdfs:range rdf:resource="#abnormalityDurations"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="AbnormalBodyPart">
+    <rdfs:subClassOf rdf:resource="#BodyPart"/>
+  </owl:Class>
+
+  <owl:ObjectProperty rdf:ID="infectingAgent">
+    <rdfs:domain rdf:resource="#InfectedBodyPart"/>
+    <rdfs:range rdf:resource="#MicroOrganism"/>
+  </owl:ObjectProperty>
+
+  <owl:Class rdf:ID="InfectedBodyPart">
+    <rdfs:subClassOf rdf:resource="#BodyPart"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#infected"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#true"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#infectingAgent"/>
+ 	<owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+
+  <!-- Bronchiectasis: bronchial dilatation.
+  -->
+
+  <rdfs:Datatype rdf:about="#dilatationMorphologies"/>
+
+  <owl:DatatypeProperty rdf:ID="dilated">
+    <rdfs:domain rdf:resource="#Bronchus"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="dilatationMorphology">
+    <rdfs:domain rdf:resource="#DilatedBronchus"/>
+    <rdfs:range rdf:resource="#dilatationMorphologies"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="WindpipeDivision">
+    <rdfs:subClassOf rdf:resource="#BodyPart"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="Bronchus">
+    <rdfs:subClassOf rdf:resource="#WindpipeDivision"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DilatedBronchus">
+    <rdfs:subClassOf rdf:resource="#Bronchus"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#dilated"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#true"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+
+  <!-- Laryngitis
+  -->
+
+  <owl:Class rdf:ID="Larynx">
+    <rdfs:subClassOf rdf:resource="#BodyPart"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TubercleBacillus">
+    <rdfs:subClassOf rdf:resource="#MicroOrganism"/>
+  </owl:Class>
+
+  <owl:DatatypeProperty rdf:ID="inflamed">
+    <rdfs:domain rdf:resource="#AbnormalBodyPart"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="suppurative">
+    <rdfs:domain rdf:resource="#AbnormalBodyPart"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="granulomatous">
+    <rdfs:domain rdf:resource="#AbnormalBodyPart"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="septic">
+    <rdfs:domain rdf:resource="#InfectedAbnormalBodyPart"/>
+    <rdfs:range rdf:resource="http://reasoner.sourceforge.net/reasoner#trueOrFalse"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="InfectedAbnormalBodyPart">
+    <rdfs:subClassOf rdf:resource="#InfectedBodyPart"/>
+    <rdfs:subClassOf rdf:resource="#AbnormalBodyPart"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TuberculousBodyPart">
+    <rdfs:subClassOf rdf:resource="#InfectedAbnormalBodyPart"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#infectingAgent"/>
+ 	<owl:allValuesFrom rdf:resource="#TubercleBacillus"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#granulomatous"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#true"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#suppurative"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#false"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#septic"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#false"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TuberculousInflamedLarynx">
+    <rdfs:label>tuberculous laryngitis</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#TuberculousBodyPart"/>
+    <rdfs:subClassOf rdf:resource="#Larynx"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#inflamed"/>
+ 	<owl:allValuesFrom rdf:resource="http://reasoner.sourceforge.net/reasoner#true"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TuberculousLaryngitis">
+    <owl:sameAs rdf:resource="#TuberculousInflamedLarynx"/>
+  </owl:Class>
+
+</rdf:RDF>

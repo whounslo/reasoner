@@ -1,0 +1,24 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:stuf="http://reasoner.sourceforge.net/stuff">
+
+  <xsd:simpleType name="stuf:atomicNumbers">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="118"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="stuf:goldAtomicNumber">
+    <xsd:restriction base="stuf:atomicNumbers">
+      <xsd:minInclusive value="79"/>
+      <xsd:maxInclusive value="79"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="stuf:physicalDimensions">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="xsd:unbounded"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

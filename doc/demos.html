@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+<title>Demonstrations - Common Lisp Reasoner</title>
+<style type="text/css" media="all">
+@import "reasoner.css";
+table.demos {
+  background: silver;
+  font-family: sans-serif;
+}
+tr.demos {
+  background: white;
+}
+span.defn {
+  font-weight: bold;
+}
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+
+    <div id="header">
+    <div class="titlebar">
+      <div class="title">
+        <h1>Common Lisp Reasoner</h1>
+        <h3>Version 3.5</h3>
+      </div>
+      <div class="menubar">
+        <ul>
+          <li class="nav"><a href="mailto:whounslo@gmail.com">Contact</a></li>
+          <li class="nav"><a href="demos.html">Demonstrations</a></li>
+          <li class="nav"><a href="reasoner.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+<h2>Demonstrations</h2>
+
+<p><em>Names of functions are located in the package </em><tt class="package">RS-USER</tt>.</p>
+
+<table class="demos" width="95%" border="1" cellpadding="5">
+<tr class="demos">
+<th>
+Demonstration
+</th>
+<th>
+Files
+</th>
+<th>
+Functions
+</th>
+<th>
+Demonstrates
+</th>
+</tr>
+<tr class="demos">
+<td rowspan=2>
+Combinatorial Problems/Scheduling
+</td>
+<td>
+queens.lisp<br/>(n-queens problem)
+</td>
+<td>
+<span class="defn">queens</span> (backtracking search), <span class="defn">queens2</span> (local search)
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#back">backtrack</a></span>,
+specialization of <span class="defn"><a href="reasoner.html#added">added-assumption</a></span>,
+<span class="defn"><a href="reasoner.html#assu">assume-slot-values</a></span>
+</td>
+</tr>
+<tr class="demos">
+<td>
+su.lisp<br/>(Sudoku puzzle generator and solver)
+</td>
+<td>
+<span class="defn">sugen</span> (local search), <span class="defn">susolve</span> (backtracking search)
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#back">backtrack</a></span>,
+specialization of <span class="defn"><a href="reasoner.html#ord">order-control-disjunction</a></span>
+and <span class="defn"><a href="reasoner.html#added">added-assumption</a></span>,
+specialization of <span class="defn"><a href="reasoner.html#valid">validate-combination</a></span>,
+<span class="defn"><a href="reasoner.html#assu">assume-slot-values</a></span>
+</td>
+</tr>
+<tr class="demos">
+<td rowspan=2>
+Planning
+</td>
+<td>
+miss.lisp (missionaries-and-cannibals problem)
+</td>
+<td>
+<span class="defn">miss</span>
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#solu">solutions</a></span>,
+<a href="#note">non-monotonic reasoning</a>,
+<span class="defn"><a href="reasoner.html#section11">:assume</a></span> qualifier,
+<span class="defn"><a href="reasoner.html#section7">:count</a></span> slot option,
+<span class="defn"><a href="reasoner.html#assu">assume-slot-values</a></span>
+</td>
+</tr>
+<tr class="demos">
+<td>
+blocks.lisp (blocks world)
+</td>
+<td>
+<span class="defn">blocks</span>
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#solu">solutions</a></span>,
+<a href="#note">non-monotonic reasoning</a>,
+<span class="defn"><a href="reasoner.html#section11">:assume</a></span> qualifier,
+<span class="defn"><a href="reasoner.html#section7">:count</a></span> slot option,
+<span class="defn"><a href="reasoner.html#section9a">:inverse</a></span> slot option,
+<span class="defn"><a href="reasoner.html#assu">assume-slot-values</a></span>
+</td>
+</tr>
+<tr class="demos">
+<td>
+Multiple-Fault Diagnosis
+</td>
+<td>
+mult.lisp
+</td>
+<td>
+<span class="defn">diagnoses1</span>, <span class="defn">diagnoses2</span>
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#solu">solutions</a></span>,
+<a href="#note">non-monotonic reasoning</a>,
+<a href="reasoner.html#defc">constraints</a>,
+<span class="defn"><a href="reasoner.html#section7a">composite objects</a></span>
+</td>
+</tr>
+<tr class="demos">
+<td>
+Counterfactuals
+</td>
+<td>
+boris.lisp
+</td>
+<td>
+<span class="defn">if-boris</span>
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#solu">solutions</a></span>,
+<a href="#note">non-monotonic reasoning</a>,
+<span class="defn"><a href="reasoner.html#section11">:assume</a></span> qualifier
+</td>
+</tr>
+<tr class="demos">
+<td>
+Temporal Reasoning
+</td>
+<td>
+career.lisp
+</td>
+<td>
+<span class="defn">career1</span>, <span class="defn">career2</span>
+</td>
+<td>
+<span class="defn"><a href="reasoner.html#solu">solutions</a></span>,
+<a href="#note">non-monotonic reasoning</a>,
+<span class="defn"><a href="reasoner.html#section11">:assume</a></span> qualifier,
+<span class="defn"><a href="reasoner.html#section7">:count</a></span> slot option,
+<span class="defn"><a href="reasoner.html#section7a">composite objects</a></span>
+</td>
+</tr>
+</table>
+
+<h2><a name="note">Note on Non-Monotonic Reasoning</a></h2>
+
+<p>Non-monotonic (or defeasible) reasoning is the the norm in practical, everyday
+problem-solving: it is reasoning under conditions of uncertainty, from incomplete or
+unreliable information. Such inferences do not carry a guarantee of soundness and may
+later need to be revised.</p>
+
+<p>The <em>temporal reasoning</em> demonstration clearly illustrates this phenomenon.
+Assimilating a hiring or promotion event may result in a revision of a inference about
+a person's employment status made from their employment history.</p>
+
+<p>The ATMS is used to realize non-monotonic reasoning by entirely extra-logical
+means.</p>
+
+<p>The <em>counterfactuals</em> demonstration concerns statements of the form ‘if
+such-and-such were the case, then such-and-such would be the case’. It employs a treatment
+of such statements not simply as implicational rules whose antecedent happens to be false,
+but as elliptical arguments. One counterfactual can be defeated by another: they
+sanction conclusions which may be contradicted by subsequently-acquired information.</p>
+
+<p><em>Diagnosis</em> is also non-monotonic in the sense that different diagnoses may result
+from an additional observation of the faulty system's behaviour.</p>
+
+<p>The <em>planning</em> demonstrations illustrate the formulation of the actions relevant to
+(e.g.) a simple ‘blocks world’ problem as axioms whose consequent contradicts their antecedent.
+The law of contradiction is used to construct a new situation or possible world, given by a
+set of statements (i.e., slot values), comprising the consequent and all features of a
+previous situation that are consistent with it: information is ‘carried over’ from one
+situation to another in the absence of knowledge to the contrary.</p>
+
+</body>
+
+</html>

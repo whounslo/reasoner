@@ -1,0 +1,32 @@
+body {
+  background: white;
+}
+h1.title {
+  text-align: center;
+}
+h3.version {
+  text-align: center;
+}
+h3.author {
+  text-align: center;
+}
+span.defn {
+  font-weight: bold;
+}
+span.xmldefn {
+  font-family: sans-serif;
+  font-size: smaller;
+}
+td.methsig1 {
+  font-style: oblique;
+}
+td.methsig2 {
+  font-style: oblique;
+}
+span.argname {
+  font-style: oblique;
+}
+span.arglist {
+  font-style: normal;
+  font-family: Courier;
+}

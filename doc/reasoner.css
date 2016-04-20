@@ -1,0 +1,31 @@
+body {
+  background: white;
+}
+img {
+  border: none;
+}
+h1 {
+  font-style: oblique;
+  color: white;
+}
+h3 {
+  font-style: oblique;
+  color: white;
+}
+div.titlebar {
+  font-family: sans-serif;
+  background: #4F7FAE;
+  padding: 0.1em;
+  border-bottom: 4px solid silver;
+}
+div.menubar a {
+  text-decoration: none;
+  color: white;
+}
+div.menubar {
+  text-align: right;
+}
+li.nav {
+  display: inline;
+  padding: 0px .5em;
+}

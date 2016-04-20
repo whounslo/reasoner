@@ -1,0 +1,349 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:rs="http://reasoner.sourceforge.net/reasoner"
+        targetNamespace="http://reasoner.sourceforge.net/reasoner">
+
+  <annotation>
+    <documentation xml:lang="en">
+     Common Lisp Reasoner rule language.
+     Copyright (C) 2011, 2012, 2013 William Hounslow.
+     Revision 4.
+    </documentation>
+  </annotation>
+
+  <element name="ruleSet" type="rs:RuleSet"/>
+
+  <element name="if" type="rs:IfForwardRule"/>
+  <element name="iff" type="rs:IffForwardRule"/>
+  <element name="formula" type="rs:Constraint"/>
+
+  <element name="ruleLabel" type="rs:RuleLabel"/>
+  <element name="comment" type="string"/>
+
+  <element name="proposition" type="rs:Proposition"/>
+
+  <element name="variable" type="rs:Variable"/>
+  <element name="attributeReference" type="rs:AttributeReference"/>
+
+  <element name="relation" type="rs:relation"/>
+  <element name="arithmeticExpr" type="rs:ArithmeticExpr"/>
+
+  <group name="DISJUNCTION">
+    <choice>
+      <element name="or" type="rs:CompoundFormula"/>
+      <element name="and" type="rs:CompoundFormula"/>
+    </choice>
+  </group>
+
+  <group name="EXPRESSION">
+    <choice>
+      <element name="implies" type="rs:CompoundFormula"/>
+      <element name="ifAndOnlyIf" type="rs:CompoundFormula"/>
+      <group ref="rs:DISJUNCTION"/>
+    </choice>
+  </group>
+
+  <group name="PRIMARY">
+    <choice>
+      <element ref="rs:proposition"/>
+      <element name="not" type="rs:Not"/>
+      <group ref="rs:EXPRESSION"/>
+    </choice>
+  </group>
+
+  <complexType name="RuleSet">
+    <sequence>
+      <element ref="rs:comment" minOccurs="0"/>
+      <choice maxOccurs="unbounded">
+        <element ref="rs:if"/>
+        <element ref="rs:iff"/>
+        <element ref="rs:formula"/>
+      </choice>
+    </sequence>
+  </complexType>
+
+  <complexType name="IfForwardRule">
+    <sequence>
+      <element ref="rs:ruleLabel"/>
+      <element ref="rs:comment" minOccurs="0"/>
+      <element name="head" type="rs:RuleCompoundHead"/>
+      <element name="body" type="rs:RuleBody" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="IffForwardRule">
+    <sequence>
+      <element ref="rs:ruleLabel"/>
+      <element ref="rs:comment" minOccurs="0"/>
+      <element name="head" type="rs:RuleHead"/>
+      <element name="body" type="rs:RuleBody"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="RuleLabel">
+    <attribute name="name" type="string"/>
+    <attribute name="assume" type="boolean"/>
+  </complexType>
+
+  <group name="HEAD">
+    <choice>
+      <element ref="rs:proposition"/>
+      <element name="not">
+        <complexType>
+          <sequence>
+            <element ref="rs:proposition"/>
+          </sequence>
+        </complexType>
+      </element>
+    </choice>
+  </group>
+
+  <complexType name="RuleHead">
+    <sequence>
+      <group ref="rs:HEAD"/>
+    </sequence>
+  </complexType>
+
+  <group name="CONJUNCTION">
+    <choice>
+      <element name="and" type="rs:HeadCompoundFormula"/>
+      <group ref="rs:HEAD"/>
+    </choice>
+  </group>
+
+  <complexType name="HeadCompoundFormula">
+    <sequence>
+      <group ref="rs:CONJUNCTION" minOccurs="2" maxOccurs="2"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="RuleCompoundHead">
+    <sequence>
+      <group ref="rs:CONJUNCTION"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="RuleBody">
+    <sequence>
+      <group ref="rs:PRIMARY"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="Constraint">
+    <sequence>
+      <element ref="rs:ruleLabel"/>
+      <element ref="rs:comment" minOccurs="0"/>
+      <group ref="rs:PRIMARY"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="CompoundFormula">
+    <sequence>
+      <group ref="rs:PRIMARY" minOccurs="2" maxOccurs="2"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="Not">
+    <sequence>
+      <group ref="rs:PRIMARY"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="Proposition">
+    <sequence>
+      <element ref="rs:attributeReference"/>
+    </sequence>
+  </complexType>
+
+  <!-- The value element of arithmetic and numeric propositions can contain
+       any literal with an internal numeric represention (e.g., a date-time). -->
+  <complexType name="ArithmeticProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <element ref="rs:relation"/>
+          <choice>
+            <element name="value" type="rs:constant"/>
+            <element ref="rs:arithmeticExpr"/>
+          </choice>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="FunctionalProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <element ref="rs:relation"/>
+          <choice>
+            <sequence>
+              <element name="functionName" type="rs:function"/>
+              <element name="arguments" type="rs:NumericArgList"/>
+            </sequence>
+            <sequence>
+              <element name="aggregateFunctionName" type="rs:aggregateFunction"/>
+              <element name="relationalAttributeReference" type="rs:AttributeReference"/>
+              <element name="numericAttributeReference" type="rs:AttributeReference"/>
+            </sequence>
+          </choice>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="LispProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <element name="functionName" type="string"/>
+          <element name="arguments" type="rs:ArgList"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="NumericProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <element name="value" type="rs:numericRange"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="LiteralProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <choice>
+            <element name="valueAttributeReference" type="rs:AttributeReference"/>
+            <element name="value" type="rs:literalRange"/>
+          </choice>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="RelationalProposition">
+    <complexContent>
+      <extension base="rs:Proposition">
+        <sequence>
+          <element name="specializer" type="rs:Variable"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <!-- The ref attribute is used to abbreviate a variable by referencing
+       another variable that appears in full within the same rule. -->
+  <complexType name="Variable">
+    <attribute name="name" type="string"/>
+    <attribute name="type" type="string"/>
+    <attribute name="ref" type="string"/>
+  </complexType>
+
+  <complexType name="AttributeReference">
+    <sequence>
+      <element ref="rs:variable"/>
+    </sequence>
+    <attribute name="name" type="string"/>
+  </complexType>
+
+  <group name="NUMARG">
+    <choice>
+      <element ref="rs:attributeReference"/>
+      <element name="constant" type="integer"/>
+    </choice>
+  </group>
+
+  <complexType name="ArithmeticExpr">
+    <sequence>
+      <choice>
+        <group ref="rs:NUMARG"/>
+        <sequence>
+          <element name="operator" type="rs:operator"/>
+          <element ref="rs:arithmeticExpr" minOccurs="2" maxOccurs="2"/>
+        </sequence>
+      </choice>
+    </sequence>
+    <attribute name="minus" type="boolean"/>
+  </complexType>
+
+  <complexType name="NumericArgList">
+    <sequence>
+      <group ref="rs:NUMARG" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="ArgList">
+    <sequence>
+      <choice maxOccurs="unbounded">
+        <element ref="rs:attributeReference"/>
+        <element ref="rs:variable"/>
+        <element name="constant" type="rs:constant"/>
+      </choice>
+    </sequence>
+  </complexType>
+
+  <simpleType name="relation">
+    <restriction base="string">
+      <enumeration value="="/>
+      <enumeration value="&gt;"/>
+      <enumeration value="&lt;"/>
+      <enumeration value="&gt;="/>
+      <enumeration value="&lt;="/>
+      <enumeration value="/="/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="operator">
+    <restriction base="string">
+      <enumeration value="+"/>
+      <enumeration value="-"/>
+      <enumeration value="*"/>
+      <enumeration value="/"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="constant">
+    <union memberTypes="integer string"/>
+  </simpleType>
+
+  <simpleType name="function">
+    <restriction base="string">
+      <enumeration value="min"/>
+      <enumeration value="max"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="aggregateFunction">
+    <restriction base="string">
+      <enumeration value="aggregateMin"/>
+      <enumeration value="aggregateMax"/>
+      <enumeration value="aggregateSum"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="listOfNumber">
+    <list itemType="constant"/>
+  </simpleType>
+
+  <simpleType name="numericRange">
+    <restriction base="rs:listOfNumber">
+      <minLength value="1"/>
+      <maxLength value="2"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="listOfString">
+    <list itemType="string"/>
+  </simpleType>
+
+  <simpleType name="literalRange">
+    <restriction base="rs:listOfString">
+      <minLength value="1"/>
+    </restriction>
+  </simpleType>
+
+</schema>

@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+<title>RDF/XML Reference - Common Lisp Reasoner</title>
+<style type="text/css" media="all">
+@import "reasonerdef.css";
+table.names {
+  font-family: sans-serif;
+}
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+
+<h1 class="title">RDF and OWL Compatibility</h1>
+
+<dl>
+<dt>
+<span class="section"><a href="reasoner.html">Main Document</a></span>
+</dt>
+</dl>
+
+<dl>
+<dt>
+<span class="section"><a href="#sectionB1">Overview</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionB2">Usage Examples</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionB3">Serialization and Deserialization</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#sectionB3.0">Resource Classes</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionB3.1">RDF and OWL Serialization</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionB3.2">RDF and OWL Deserialization</a></span>
+</dt>
+</dl>
+</dd>
+</dl>
+
+<h2><a name="sectionB1">Overview</a></h2>
+
+<p class="bodytext">For an introduction to RDF and OWL, consult the <a
+href="http://www.w3.org/TR/rdf-primer/">RDF Primer</a> and the <a
+href="http://www.w3.org/TR/owl-guide/">OWL Web Ontology Language
+Guide</a>.</p>
+
+<p class="bodytext">There is an obvious correspondence between the representation of a <a
+href="reasoner.html#section6">slot value</a> as a specialization of an ATMS node and the RDF
+subject-predicate-object triple.</p>
+
+<p class="bodytext">Similarly, there is a clear correspondence between CLOS and RDF Schema,
+although there is no specialization of properties in CLOS. Conversely,
+RDF Schema does not allow the restriction of a property (or in
+CLOS parlance, slot) within a class. Nor does it make any provision for
+cardinality information. These features are to be found in OWL.</p>
+
+<p class="bodytext">The relationship with OWL, however, is less straightforward.</p>
+
+<p class="bodytext">The CLOS class hierarchy is solely a mechanism for elision, for recording
+information (properties and rules) in one place (a superclass), and having
+it automatically propagate to many places (its subclasses). The name of a class
+is merely an <em>abbreviation</em> for what it encapsulates (a description
+of its instances).</p>
+
+<p class="bodytext">Specialized class-based reasoning has been added to this framework, in the
+form of <span class="defn"><a href="reasoner.html#clas">classify</a></span>.
+It infers that an instance of a class is also a member
+of a subordinate class that restricts the values of its properties.
+(<span class="defn">change-class</span> can then be used to change the instance's
+class to the subordinate class.)</p>
+
+<p class="bodytext">Its use presumes that subordinate classes are disjoint
+(see <span class="section"><a href="reasoner.html#section7a.1">Compound
+Objects</a></span>), and that <em>either</em> they have been fully enumerated and are
+differentiated by varying restrictions of the same property or properties,
+<em>or</em> that each subordinate class constitutes a definition, that is, contains
+sufficient as well as necessary conditions for membership.</p>
+
+<p class="bodytext">Its use further presumes that the subordinate classes define
+additional properties, whose values can then be sought.</p>
+
+<p class="bodytext">In contrast, a primary purpose of OWL DL is to enable one to state
+that, e.g., ‘<tt class="sexpr">WhiteWine</tt> is exactly the intersection of the class
+<tt class="sexpr">Wine</tt> and the set of things that are white in colour’.
+This amounts to stating that the instances to which this description applies are
+<em>called</em> <tt class="sexpr">WhiteWine</tt>.</p>
+
+<p class="bodytext">The overlap with OWL, therefore, is roughly the OWL Lite subset. The
+knowledge representation facilities outlined above do not constitute, as a
+whole or in part, a description logic.</p>
+
+<p class="bodytext">The implemented subset of OWL Lite comprises those features that have
+counterparts in RDF, plus property restrictions and property characteristics.
+Cardinality expressions with arbitrary bounds (deriving from OWL DL) and
+classes as instances (OWL Full) are, however, permitted. Identity of
+classes, and of instances, is implemented by associating multiple names (as
+accepted by <span class="defn">find-class</span> and
+<span class="defn"><a href="reasoner.html#find">find-instance</a></span>)
+with a single object.</p>
+
+<table width="95%" border="2" class="names">
+<tr>
+<th colspan="4" align="left">
+Table 1: Implemented Language Subsets
+</th>
+</tr>
+<tr>
+<th>
+&nbsp;
+</th>
+<th>
+RDF
+</th>
+<th>
+RDFS
+</th>
+<th>
+OWL
+</th>
+</tr>
+<tr>
+<th>
+Attributes
+</th>
+<td>
+resource, about, ID, datatype
+</td>
+<td>
+&nbsp;
+</td>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<th>
+Elements
+</th>
+<td>
+RDF, Description, Property, type
+</td>
+<td>
+comment, label, Class, Resource, subClassOf, subPropertyOf, domain, range, Datatype
+</td>
+<td>
+Ontology, Class, ObjectProperty, DatatypeProperty, Thing, sameAs,
+TransitiveProperty, SymmetricProperty, FunctionalProperty, inverseOf,
+InverseFunctionalProperty,
+Restriction, onProperty, cardinality, minCardinality, maxCardinality,
+allValuesFrom, someValuesFrom
+</td>
+</tr>
+<tr>
+<th>
+Elements that have no effect
+</th>
+<td>
+&nbsp;
+</td>
+<td>
+seeAlso, isDefinedBy
+</td>
+<td>
+equivalentClass, equivalentProperty, differentFrom, AllDifferent,
+distinctMembers, versionInfo,
+imports, priorVersion, backwardCompatibleWith, incompatibleWith,
+AnnotationProperty, OntologyProperty, DeprecatedClass, DeprecatedProperty
+</td>
+</tr>
+</table>
+
+<p class="bodytext">User-defined datatypes are used to denote enumerated sets of
+values and numeric subranges.</p>
+
+<h2><a name="sectionB2">Usage Examples</a></h2>
+
+<p class="bodytext">There are example formalizations (ontology fragments) of so-called
+<a href="stuff.rdf">stuff</a> (with associated <a href="stuff.xsd">datatypes</a>)
+and <a href="disease.rdf">medical terms</a> (plus <a href="disease.xsd">datatypes</a>).</p>
+
+<h2><a name="sectionB3">Serialization and Deserialization</a></h2>
+
+<p class="bodytext">The following should be read in conjunction with <a
+href="serialize.html">XML Serialization and Deserialization.</a></p>
+
+<p class="bodytext">In whatever combination is appropriate, <tt
+class="sexpr">:owl</tt>, <tt class="sexpr">:rdfs</tt> and
+<tt class="sexpr">:rdf</tt> should appear in <span
+class="defn"><a href="serialize.html#nsp">*namespaces*</a></span>; <tt class="sexpr">:owl</tt>,
+if present, must precede <tt class="sexpr">:rdfs</tt>.</p>
+
+<p class="bodytext">The value of <span class="defn"><a
+href="serialize.html#tarnsp">*target-namespace*</a></span> is interpreted as
+the base URI of the document.</p>
+
+<h3><a name="sectionB3.0">Resource Classes</a></h3>
+
+<p class="bodytext">The distinction between <span class="xmldefn">rdfs:Class</span> and <span
+class="xmldefn">owl:Class</span> (the latter being a subclass of the
+former) relevant to OWL Lite is reflected in the CLOS class hierarchy, though not their
+subclass relationship with <span class="xmldefn">rdfs:Resource</span>. They are instances
+of <span class="defn">resource-class</span>.</p>
+
+<p class="bodytext">In the absence of any property classes,
+<span class="xmldefn">owl:Thing</span> is treated as identical to <span
+class="xmldefn">rdfs:Resource</span>.</p>
+
+<p class="bodytext">Subclasses of these classes, and their slot definitions, can store
+multilingual labels, corresponding to <span class="xmldefn">rdfs:label</span> elements
+of a class or property.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">class-label</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns multilingual label information for class, the value of the <span
+class="defn">:label</span> initialization argument.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">slot-definition-label</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">slot
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns multilingual label information for slot, the value of the <span
+class="defn">:label</span> initialization argument.</p>
+
+<p class="bodytext">This information may take the form of a string, a list comprising
+a single string (if supplied as a <span class="defn">defclass</span> class option), or a
+list of language-label pairs:</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">resource-label-lang</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">label
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the language tag associated with the label.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">resource-label-text</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">label
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the content of the label.</p>
+
+<p class="bodytext">During deserialization information is always stored in this form.</p>
+
+<h3><a name="sectionB3.1">RDF and OWL Serialization</a></h3>
+
+<p class="bodytext">The generic functions <span class="defn"><a
+href="serialize.html#serobj">serialize-object</a></span>, <span
+class="defn"><a href="serialize.html#serclass">serialize-class</a></span> and
+<span class="defn"><a href="serialize.html#serclassh">serialize-class-hierarchy</a></span>
+accept <tt class="sexpr">:rdf</tt>, <tt class="sexpr">:rdfs</tt> or
+<tt class="sexpr">:owl</tt> as their <span class="argname">format</span> argument. <span
+class="defn"><a href="serialize.html#serobj">serialize-object</a></span>
+will only recursively serialize unnamed objects.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="serobj"><span class="defn">serialize-objects</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>object <span
+class="arglist">extended-object)</span> <span class="arglist">(</span>format <span
+class="arglist">(eql :rdf))</span> <span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> global
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Recursively serializes <span class="argname">object</span> and all (i.e.,
+named and unnamed) objects to which it refers. Does not detect circularity or repetition
+(but see <span class="defn"><a href="serialize.html#sersl">serialize-slot</a></span>). <span
+class="argname">global</span> indicates whether the element corresponding to <span
+class="argname">object</span> is defined globally in the schema; it defaults to non-<span
+class="defn">nil</span>.</p>
+
+<p class="bodytext"><span
+class="defn"><a href="serialize.html#serclass">serialize-class</a></span> generates both
+property and class definitions. If generating RDF Schema definitions, this output may not
+capture all the information in the CLOS hierarchy. When applied to an instance of
+<span class="defn">range-class</span>, it generates a single <span
+class="xmldefn">rdfs:Datatype</span> element.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*allow-multiple-domains*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">When generating RDF Schema definitions, determines whether multiple
+domain and range elements, gleaned from different slot descriptions of the same
+name in the CLOS hierarchy, may appear within a <span
+class="xmldefn">rdfs:Property</span> definition.
+If <span class="defn">nil</span> (the default) it will reflect only the most general slot
+description in the hierarchy.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="wirdf"><span class="defn">with-rdf</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">(&amp;key</span> xml-version xml-base namespaces default-namespace<span
+class="arglist">)</span> {form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Variation on <span class="defn"><a
+href="serialize.html#wixml">with-xml</a></span>, enclosing
+<span class="argname">form</span>s in an <span class="xmldefn">rdf:RDF</span> element.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">with-ontology</span>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">(&amp;key</span> xml-version about namespaces default-namespace
+comment label label-lang<span
+class="arglist">)</span> {form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Like <span class="defn"><a href="#wirdf">with-rdf</a></span>, but
+incorporating an <span class="xmldefn">owl:Ontology</span> element. <span
+class="argname">about</span> is used to set the base URI of the document; the value of <span
+class="xmldefn">rdf:about</span> attribute is left empty.</p>
+
+<h3><a name="sectionB3.2">RDF and OWL Deserialization</a></h3>
+
+<p class="bodytext">Both property specialization and property characteristics
+(other than <span class="xmldefn">owl:FunctionalProperty</span>) are implemented by
+means of <span class="section"><a
+href="reasoner.html#section9a">automatically-generated rules</a></span>.</p>
+
+<p class="bodytext"><span class="xmldefn">owl:someValuesFrom</span> is treated as a
+kind of property specialization: a rule is generated to propagate values that satisfy the
+restriction to a specially-created slot with restricted cardinality. In addition, the effect of
+<span class="xmldefn">hasValue</span> (OWL DL) can be achieved by specialization
+to individuals (i.e., by defining a class, say, <tt class="sexpr">no-other-than-foo</tt>
+that has a single instance, <tt class="sexpr">foo</tt>).</p>
+
+<p class="bodytext">RDF containers and collections are unimplemented.</p>
+
+<p class="bodytext">An attempt to deserialize an unimplemented feature is an error.
+But see <span
+class="defn"><a href="serialize.html#defie">define-ignored-elements</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rse::*class-slot-specifications*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to accumulate slot specifications derived from property and class
+definitions, to be processed upon reaching a closing <span
+class="xmldefn">rdf:RDF</span> tag.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">with-deserialization-unit</span>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">{form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Binds the above variable. Within a deserialization unit (or if absent)
+an attempt to redefine a property is treated as an error.</p>
+
+</body>
+
+</html>

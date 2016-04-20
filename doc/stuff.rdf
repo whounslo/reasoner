@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<rdf:RDF
+  xmlns     = "http://reasoner.sourceforge.net/stuff#"
+  xml:base  = "http://reasoner.sourceforge.net/stuff#"
+  xmlns:stuf= "http://reasoner.sourceforge.net/stuff#"
+  xmlns:owl = "http://www.w3.org/2002/07/owl#"
+  xmlns:rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs= "http://www.w3.org/2000/01/rdf-schema#">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:comment>
+      'Pieces of stuff', with or without form.
+    </rdfs:comment>
+  </owl:Ontology>
+
+  <rdfs:Datatype rdf:about="#atomicNumbers"/>
+
+  <rdfs:Datatype rdf:about="#goldAtomicNumber"/>
+
+  <rdfs:Datatype rdf:about="#physicalDimensions"/>
+
+  <owl:Class rdf:ID="Stuff">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:Class>
+
+  <owl:ObjectProperty rdf:ID="constituents">
+    <rdfs:domain rdf:resource="#PieceOfStuff"/>
+    <rdfs:range rdf:resource="#MinimalPart"/>
+  </owl:ObjectProperty>
+
+  <Stuff rdf:ID="PieceOfStuff">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#constituents"/>
+ 	<owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </Stuff>
+
+  <owl:Class rdf:ID="MinimalPart"/>
+
+  <!-- Gold: extension is all sets of gold things
+  -->
+  <owl:Class rdf:ID="Gold">
+    <rdfs:subClassOf rdf:resource="#Stuff"/>
+  </owl:Class>
+
+  <owl:DatatypeProperty rdf:ID="atomicNumber">
+    <rdfs:domain rdf:resource="#Atom"/>
+    <rdfs:range rdf:resource="#atomicNumbers"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="Atom">
+    <rdfs:subClassOf rdf:resource="#MinimalPart"/>
+  </owl:Class>
+
+  <Gold rdf:ID="GoldAtom">
+    <rdfs:subClassOf rdf:resource="#Atom"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#atomicNumber"/>
+ 	<owl:allValuesFrom rdf:resource="#goldAtomicNumber"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </Gold>
+
+  <owl:DatatypeProperty rdf:ID="datesFrom">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="height">
+    <rdfs:domain rdf:resource="#PhysicalObject"/>
+    <rdfs:range rdf:resource="#physicalDimensions"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="PhysicalObject"/>
+
+  <Gold rdf:ID="PieceOfGold">
+    <rdfs:subClassOf rdf:resource="#PieceOfStuff"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#constituents"/>
+ 	<owl:someValuesFrom rdf:resource="#GoldAtom"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </Gold>
+
+  <Gold rdf:ID="GoldStatuette">
+    <rdfs:subClassOf rdf:resource="#PhysicalObject"/>
+    <rdfs:subClassOf rdf:resource="#PieceOfGold"/>
+  </Gold>
+
+  <GoldStatuette rdf:ID="FifaWorldCupTrophy">
+    <datesFrom rdf:datatype="http://www.w3.org/2001/XMLSchema#gYear">1974</datesFrom>
+    <height rdf:datatype="#physicalDimensions">365</height>
+  </GoldStatuette>
+
+</rdf:RDF>

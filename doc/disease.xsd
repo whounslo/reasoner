@@ -1,0 +1,18 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:dis="http://reasoner.sourceforge.net/disease">
+
+  <xsd:simpleType name="dis:dilatationMorphologies">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="cylindrical"/>
+      <xsd:enumeration value="fusiform"/>
+      <xsd:enumeration value="saccular"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="dis:abnormalityDurations">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="acute"/>
+      <xsd:enumeration value="chronic"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

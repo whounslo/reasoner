@@ -1,0 +1,1270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+<title>XML Reference - Common Lisp Reasoner</title>
+<style type="text/css" media="all">
+@import "reasonerdef.css";
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+
+<h1 class="title">XML Serialization and Deserialization</h1>
+
+<dl>
+<dt>
+<span class="section"><a href="reasoner.html">Main Document</a></span>
+</dt>
+</dl>
+
+<dl>
+<dt>
+<span class="section"><a href="#sectionA1">Overview</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA2">Namespaces and Prefixes</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA3">XML Serialization</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#sectionA3.1">Classes</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA3.2">Instances</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA3.3">Rules</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA3.4">XML Schema Built-in Datatypes</a></span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span class="section"><a href="#sectionA4">XML Deserialization</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#sectionA4.0">Processing of XML Schema Subelements</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA4.1">General Parsing Interface</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA4.1a">Parsing of XML Schema Built-in Datatypes</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA4.2">Integration with Specific Parsers</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#sectionA4.2.1">Parse Tree Traversal</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#sectionA4.2.2">SAX</a></span>
+</dt>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+
+<h2><a name="sectionA1">Overview</a></h2>
+
+<p class="bodytext">Classes (as an XML schema) and instances, including rules, may be
+serialized. (Those unfamiliar with XML should read the following in
+conjunction with <a href="http://www.w3.org/TR/xmlschema-0/">XML Schema
+Part 0: Primer Second Edition</a>.)</p>
+
+<p class="bodytext">An interface is provided that can be used in conjunction with a parser
+to perform the reverse operation.</p>
+
+<p class="bodytext">All symbols referred to below are accessible in the package
+<tt class="package">REASONER-EXT</tt> (nickname <tt class="package">RS-EXT</tt>)
+and external, unless otherwise indicated.</p>
+
+<h2><a name="sectionA2">Namespaces and Prefixes</a></h2>
+
+<p class="bodytext">XML names that belong to a particular namespace are stored in a Lisp
+package associated with a namespace name (a symbol); this name (converted
+to a lower case string) is used to qualify the names of the namespace in serialized output.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defns"><span class="defn">defnamespace</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">namespace-name uri {name}* [<span
+class="arglist">(:documentation</span> string<span class="arglist">)</span>]
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Associates <span class="argname">namespace-name</span> with <span
+class="argname">uri</span> and a set of Lisp-style, symbol or string, names.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="makens"><span class="defn">make-namespace</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">namespace-name uri <span
+class="arglist">&amp;optional</span> package
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Makes a new namespace, associating it with <span class="argname">uri</span>.
+The <span class="argname">package</span>
+argument is used to associate the namespace with an existing Lisp package. Signals
+an error if a package is already associated with the namespace.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="ensp"><span class="defn">ensure-namespace-package</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the package associated with a namespace name, setting it if none
+exists.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*namespace-package-prefix*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used by <span class="defn"><a href="#ensp">ensure-namespace-package</a></span>
+when creating a Lisp package associated
+with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">namespace-package</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">(setf namespace-package)</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">new-value name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Retrieves or sets the package associated with a namespace name.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">namespace-uri</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">(setf namespace-uri)</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">new-value name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Retrieves or sets the uri (a string) associated with a namespace name.</p>
+
+<h2><a name="sectionA3">XML Serialization</a></h2>
+
+<p class="bodytext">Names are formatted in the standard XML mixed-case style.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*emphasize-type-name*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">If non-<span class="defn">nil</span> (the default), <span
+class="xmldefn">complexType</span> names have their initial character
+capitalized.</p>
+
+<p class="bodytext">Serialized output is sent to <span class="defn">*standard-output*</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">redirect-to-stream</span>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">stream {form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Redirects <span class="defn">*standard-output*</span> to <span
+class="argname">stream</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*xml-print-pretty*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines whether elements are printed on separate lines and
+indented; initially non-<span class="defn">nil</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*xml-pprint-indent*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines how far inner elements are indented; initially 2.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*separate-definitions*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines whether, within a schema or ruleset, a blank line is inserted
+between definitions; initially non-<span class="defn">nil</span>.</p>
+
+<h3><a name="sectionA3.1">Classes</a></h3>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">with-schema</span>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">(&amp;key</span> target-namespace namespaces default-namespace
+documentation documentation-lang<span
+class="arglist">)</span> {form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Incorporates the output of the <span class="argname">form</span>s
+in a schema element. <span class="argname">documentation</span> is a documentation string,
+used to annotate the schema; <span class="argname">documentation-lang</span> defaults to
+<tt class="sexpr">:en</tt>.</p>
+
+<p class="bodytext"><span class="argname">target-namespace</span> is a prefix used to
+determine the value of the <span class="xmldefn">targetNamespace</span> attribute of the
+schema element, and to create a temporary binding of <span class="defn"><a
+href="#tarnsp">*target-namespace*</a></span>.
+Defaults to <tt class="sexpr">:xsd</tt>, denoting the <a
+href="http://www.w3.org/2001/XMLSchema">XML Schema namespace</a>.</p>
+
+<p class="bodytext"><span class="argname">namespaces</span> is used to create a temporary
+binding of <span class="defn"><a href="#nsp">*namespaces*</a></span>.
+Defaults to <tt class="sexpr">(list :xsd)</tt>.</p>
+
+<p class="bodytext"><span class="argname">default-namespace</span> is used to create a
+temporary binding of <span class="defn"><a href="#defnsp">*default-namespace*</a></span>.</p>
+
+<p class="bodytext">The values of the schema attributes <span
+class="xmldefn">elementFormDefault</span> and <span class="xmldefn">attributeFormDefault</span>
+are governed by <span class="defn"><a href="#qual">*qualified-local-elements*</a></span> and
+<span class="defn"><a href="#qual">*qualified-local-attributes*</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">as-top-level-element</span>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">name <span
+class="arglist">&amp;optional</span> type
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Outputs a top-level element declaration. If <span class="argname">type</span>
+is omitted, it will be the same as <span class="argname">name</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="serclassh"><span class="defn">serialize-class-hierarchy</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">root <span
+class="arglist">&amp;optional</span> format tangled derived
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Serializes the portion of the class hierarchy of which <span
+class="argname">root</span> is the root, as a sequence of <span
+class="xmldefn">complexType</span> (<span class="xmldefn">simpleType</span> if it is a
+<span class="defn">range-class</span>) elements.
+<span class="argname">format</span> defaults to <tt class="sexpr">:xml</tt>.</p>
+
+<p class="bodytext">If <span class="argname">format</span> is <tt class="sexpr">:xml</tt>,
+signals an error if any of the classes have multiple superclasses, unless
+<span class="argname">tangled</span> is non-<span class="defn">nil</span>. In this case,
+the rightmost superclass is used as the base type and the derived type will contain all
+the elements (i.e., slot definitions) inherited from the other superclasses.</p>
+
+<p class="bodytext">If <span class="argname">derived</span> is non-<span
+class="defn">nil</span>, a derived type will be output for the root class.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="serclass"><span class="defn">serialize-class</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>class <span
+class="arglist">extended-class)</span> <span class="arglist">(</span>format <span
+class="arglist">(eql :xml))</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> derived
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Outputs a derived (unless <span class="argname">derived</span> is <span
+class="defn">nil</span>) <span class="xmldefn">complexType</span> definition.</p>
+
+<p class="bodytext">If a class both restricts and extends the slot definitions of a
+superclass, two derived type definitions will be output, with the
+extended type being the subordinate of the restricted type.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*restricted-type-suffix*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to construct the restricted type name from the class name; initially
+<tt class="sexpr">:restricted</tt>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">serialize-class</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>class <span
+class="arglist">range-class)</span> <span class="arglist">(</span>format <span
+class="arglist">(eql :xml))</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Outputs <span class="xmldefn">simpleType</span> definitions derived from
+<span class="xmldefn">integer</span> if a subclass of <span class="defn">numeric-range</span>,
+or <span class="xmldefn">string</span> otherwise.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="ulst"><span class="defn">*use-list-simple-types*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">If non-<span class="defn">nil</span>, <span class="xmldefn">simpleType</span>
+definitions will be list types; if <span class="defn">nil</span> (the default), atomic types.</p>
+
+<p class="bodytext">Also affects the serialization of instances: in the latter case if a range
+has not been narrowed to a single value there will be no element content and
+the <span class="xmldefn">nil</span> attribute of the element will be set, whereas in the former
+case element content will comprise a list of values.</p>
+
+<h3><a name="sectionA3.2">Instances</a></h3>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="wixml"><span class="defn">with-xml</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">(&amp;key</span> version target-namespace namespaces default-namespace<span
+class="arglist">)</span> {form}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Precedes output of forms with XML header. <span class="argname">version</span>
+defaults to 1.0.</p>
+
+<p class="bodytext"><span class="argname">target-namespace</span> is a prefix indicating the target
+namespace declared in the schema, if any; used to create a temporary binding of
+<span class="defn"><a href="#tarnsp">*target-namespace*</a></span>.</p>
+
+<p class="bodytext"><span class="argname">namespaces</span> and <span
+class="argname">default-namespace</span> are used to create temporary
+bindings for <span class="defn"><a href="#nsp">*namespaces*</a></span>
+and <span class="defn"><a href="#defnsp">*default-namespace*</a></span>, respectively.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="tarnsp"><span class="defn">*target-namespace*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Prefix that should be used to qualify elements and attributes (and type
+references in the schema), unless it is also the default namespace.
+(<span class="defn"><a href="#qual">*qualified-local-elements*</a></span>
+and <span class="defn"><a href="#qual">*qualified-local-attributes*</a></span> are used
+to exert further control over qualification.) Is added at the front of
+<span class="defn"><a href="#nsp">*namespaces*</a></span>, if not already present.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="nsp"><span class="defn">*namespaces*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">A list of prefixes corresponding to the namespaces that should be
+declared at the beginning of an element. Names belonging to a namespace
+in this list will be qualified, unless it is also the default namespace.
+Initially set to <tt class="sexpr">(list :xsi)</tt> (<tt class="sexpr">:xsi</tt> denotes the <a
+href="http://www.w3.org/2001/XMLSchema-instance">XMLSchema instance
+namespace</a>).</p>
+
+<p class="bodytext">When determining whether to qualify a name, this list is first searched
+for a namespace which has an associated Lisp package that is the same as
+the name's home package. Upon failure, it is searched again, for the first
+package in which there is a symbol with the same <span
+class="defn">symbol-name</span> as the name.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defnsp"><span class="defn">*default-namespace*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Prefix indicating the namespace, if any, that should be declared as the
+default at the beginning of an element.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="qual"><span class="defn">*qualified-local-elements*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*qualified-local-attributes*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determine whether locally defined element and attribute names belonging
+to the target namespace are qualified. Correspond to the schema attributes
+<span class="xmldefn">elementFormDefault</span> and <span
+class="xmldefn">attributeFormDefault</span>.
+Both are initially <span class="defn">nil</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*xml-id-attribute*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The name of the uniquely-identifying (unqualified) attribute that will
+be associated with elements corresponding to named instances; initially <tt
+class="sexpr">:name</tt>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="serobj"><span class="defn">serialize-object</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>object <span
+class="arglist">extended-object)</span> <span class="arglist">(</span>format <span
+class="arglist">(eql :xml))</span> <span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> tag type global
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Recursively serializes <span class="argname">object</span> and all
+objects to which it refers. Does not detect circularities (but see <span
+class="defn"><a href="#sersl">serialize-slot</a></span>).</p>
+
+<p class="bodytext"><span class="argname">tag</span> and <span class="argname">type</span> are
+the name and type, respectively, of the corresponding element (root element if <span
+class="argname">global</span> is non-<span class="defn">nil</span>).</p>
+
+<p class="bodytext"><span class="argname">global</span> indicates whether the element
+corresponding to <span class="argname">object</span> is defined globally in the schema.
+Defaults to non-<span class="defn">nil</span>.</p>
+
+<p class="bodytext">If <span class="argname">global</span> is non-<span
+class="defn">nil</span>, namespace declarations are
+added according to the values of <span class="defn"><a href="#nsp">*namespaces*</a></span> and
+<span class="defn"><a href="#defnsp">*default-namespace*</a></span>, and the element itself
+will be qualified with <span class="defn"><a href="#tarnsp">*target-namespace*</a></span>,
+if non-<span class="defn">nil</span> and not the default namespace.</p>
+
+<p class="bodytext"><span class="argname">global</span> is set to <span
+class="defn">nil</span> for recursively
+serialized objects. The qualification of local elements and attributes is governed by
+<span class="defn"><a href="#qual">*qualified-local-elements*</a></span> and
+<span class="defn"><a href="#qual">*qualified-local-attributes*</a></span>.</p>
+
+<p class="bodytext">If a slot refers to fewer instances than indicated by the lower bound of
+the <span class="defn">:count</span> slot option in the instance's class definition,
+then the missing instances will be created beforehand. If there is no such slot
+option, a value of 1 is used.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rse::*unique-name-fn*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Designates a function of one argument, a class name, that is used to
+generate unique names for instances.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="sersl"><span class="defn">serialize-slot</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot format e
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Serializes the contents of a slot. <span class="argname">slot</span> is
+a slot definition metaobject; other arguments are the same as for <span
+class="defn"><a href="#serobj">serialize-object</a></span>.</p>
+
+<p class="bodytext">A method can be supplied in order to inhibit the serialization of
+a particular slot.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="fat"><span class="defn">format-as-type</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object datatype
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called to format an element of a range. <span
+class="argname">datatype</span> is either a
+datatype associated with the range, or the name of the range itself. See <span
+class="defn"><a href="reasoner.html#defr">defrange</a></span>. The default method returns an
+XML-style name, if appropriate; if not, the object itself.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="pat"><span class="defn">print-as-type</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object datatype
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called to print an element of a range. The default method calls <span
+class="defn">princ</span> on the value
+returned by <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">range-to-content</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">value slot-type datatype
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Examines <span
+class="defn"><a href="#ulst">*use-list-simple-types*</a></span>
+and returns the value to be passed to <span
+class="defn"><a href="#pat">print-as-type</a></span>.
+Should be overridden if a <span
+class="defn"><a href="#pat">print-as-type</a></span> method always requires
+access to all elements of a range.</p>
+
+<h3><a name="sectionA3.3">Rules</a></h3>
+
+<p class="bodytext">An XML schema for the rule language is in <a href="reasoner.xsd">
+reasoner.xsd</a>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">serialize-rules</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">rules <span
+class="arglist">&amp;optional</span> format comment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Serializes <span class="argname">rules</span> (a list of instances or their
+names), enclosing them in a <span class="xmldefn">ruleSet</span> element, incorporating
+namespace declarations according to <span class="defn"><a href="#nsp">*namespaces*</a></span>
+and <span class="defn"><a href="#defnsp">*default-namespace*</a></span>.
+<span class="argname">format</span> defaults to <tt class="sexpr">:xml</tt>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">serialize-rule</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">instance format
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Serializes a rule (<span class="defn">well-formed-formula</span>) instance.</p>
+
+<h3><a name="sectionA3.4">XML Schema Built-in Datatypes</a></h3>
+
+<p class="bodytext"><span class="defn"><a href="#pat">print-as-type</a></span>
+methods are defined for the datatypes mentioned in the section
+<span class="section"><a href="#sectionA4.1a">Parsing of XML Schema Built-in
+Datatypes</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rse::*date-time-decoding-fn*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to decode a range bound representing a time. Initially <span
+class="defn">decode-universal-time</span>.</p>
+
+<h2><a name="sectionA4">XML Deserialization</a></h2>
+
+<p class="bodytext">The deserialization operation utilizes an external XML parser.</p>
+
+<p class="bodytext">Parsers can be categorized according to whether they produce a complete
+parse tree, or expose an interface (e.g., SAX) that enables parsing to be interleaved
+with subsequent processing.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="dserobjs"><span class="defn">deserialize-as-objects</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">parse-tree
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key</span> namespace base namespaces
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Takes a complete parse tree and creates or reinitializes the equivalent
+classes or instances. Calls <span class="defn"><a
+href="#dserobj">deserialize-as-object</a></span>. Returns a set of assumptions.</p>
+
+<p class="bodytext"><span class="argname">namespaces</span> is used to create a temporary
+binding for <span class="defn"><a href="#nsp">*namespaces*</a></span>, which is used
+to find the Lisp package associated with a namespace; it defaults to all defined namespaces
+(see <span class="defn"><a href="#makens">make-namespace</a></span>).
+<span class="argname">namespace</span>, used to create a temporary binding for <span
+class="defn"><a href="#nsp">*default-namespace*</a></span>, is added to the front of this
+list if non-<span class="defn">nil</span>. <span class="argname">base</span> is used to create
+a temporary binding for <span class="defn"><a href="#tarnsp">*target-namespace*</a></span>
+and defaults to the value of <span class="argname">namespace</span> (see <span
+class="section"><a href="triple.html">RDF and OWL Compatibility</a></span>).</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="dserobj"><span class="defn">deserialize-as-object</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">element
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key</span> tag-fn attribute-fn content-fn
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Takes a top-level element and creates or reinitializes the equivalent
+class or instance.</p>
+
+<p class="bodytext"><span class="argname">tag-fn</span>, when applied to a node of the tree,
+should return a tag name, unqualified; <span class="argname">attribute-fn</span> should return
+an attribute value, given a node, a name and, if the name is qualified, the uri of the
+namespace; <span class="argname">content-fn</span> should return a list comprising either a
+single string, or subordinate nodes.</p>
+
+<p class="bodytext"><span class="argname">tag-fn</span> defaults to <span
+class="defn">caar</span> (or <span class="defn">car</span>, if atomic); <span
+class="argname">attribute-fn</span> defaults to <span class="defn">assoc</span> applied to
+the <span class="defn">cdar</span> of the node;
+<span class="argname">content-fn</span> defaults to <span class="defn">cdr</span>.</p>
+
+<p class="bodytext">
+Uses a <span class="section"><a href="#sectionA4.1">low-level interface</a></span>
+that is also compatible with the second category of parsers.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*assumptions*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Captures assumptions created during deserialization. Rebound by
+<span class="defn"><a href="#dserobjs">deserialize-as-objects</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*assumption*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">If assigned a single assumption, will be used in place of
+any number of assumptions that would otherwise be created.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defie"><span class="defn">define-ignored-elements</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">namespace-name {name}*
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Defines a set of XML-style, symbol or string, element names,
+belonging to <span class="argname">namespace-name</span>, whose presence should not affect
+the processing of surrounding elements in an XML document.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*ignored-elements*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The full list of elements that are to be treated as no-ops.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*count-subelements*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">If bound to <span class="defn">nil</span> (default non-<span
+class="defn">nil</span>), will eliminate the considerable
+overhead of maintaining a count of subelements, if there are many. See <span
+class="section"><a href="reasoner.html#section7">Cardinality</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">count-subelements-p</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The system-supplied method examines the above variable. May be
+specialized to exert finer-grained control.</p>
+
+<h3><a name="sectionA4.0">Processing of XML Schema Subelements</a></h3>
+
+<p class="bodytext">A <span class="xmldefn">complexType</span> definition is always
+treated as corresponding to a CLOS class definition.</p>
+
+<p class="bodytext">Global <span class="xmldefn">element</span> declarations and
+references to them are recognized.</p>
+
+<p class="bodytext">The built-in datatypes <span class="xmldefn">boolean</span>,
+<span class="xmldefn">integer</span>, <span class="xmldefn">nonNegativeInteger</span>,
+<span class="xmldefn">positiveInteger</span> and <span class="xmldefn">string</span>,
+as well as those mentioned in the section <span
+class="section"><a href="#sectionA4.1a">Parsing of XML Schema Built-in
+Datatypes</a></span>, may be used in element declarations.</p>
+
+<p class="bodytext">The <span class="xmldefn">all</span> and <span
+class="xmldefn">choice</span> group elements are recognized, but no
+processing is performed beyond that for <span class="xmldefn">sequence</span>.</p>
+
+<p class="bodytext">Named <span class="xmldefn">group</span> elements are not
+recognized.</p>
+
+<h3><a name="sectionA4.1">General Parsing Interface</a></h3>
+
+<p class="bodytext">Usually, an XML name is converted into a Lisp equivalent,
+with hyphens inserted at the points marked by a transition between lower and
+upper case. However, if <span class="defn">readtable-case</span>,
+when called with the current readtable, returns <tt class="sexpr">:preserve</tt>,
+the XML variant will be used exclusively.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="findxn"><span class="defn">find-xml-name</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name namespace <span
+class="arglist">&amp;optional</span> errorp
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Locates the symbol named <span class="argname">name</span>
+(a string) in the package associated with the namespace given by <span
+class="argname">namespace</span>, which can be either a uri
+(string) or a keyword symbol. If none is found, signals an error, unless <span
+class="argname">errorp</span> is <span class="defn">nil</span>. For use with
+element names. See <span class="defn"><a href="#defns">defnamespace</a></span>,
+<span class="defn"><a href="#defie">define-ignored-elements</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="intxn"><span class="defn">intern-xml-name</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name namespace
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Enters a symbol named <span class="argname">name</span>
+(a string) into the package associated with the namespace given by <span
+class="argname">namespace</span>, which can be either a uri
+(string) a keyword symbol, or <span class="defn">nil</span>. In the latter case, if
+the name is not already present in one of the members of <span class="defn"><a
+href="#nsp">*namespaces*</a></span>, it is interned in the current package.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="part"><span class="defn">parse-as-type</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object datatype min max
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called to parse non-whitespace content within an instance
+document, bounded by
+<span class="argname">min</span> and <span class="argname">max</span>. The default
+method calls <span class="defn">parse-integer</span>, and then, if <span
+class="defn">nil</span> is returned,
+<span class="defn"><a href="#intxn">intern-xml-name</a></span>.
+See <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">into-xml-element</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">tag attributes
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Should be called when an element is first encountered.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">store-xml-content</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">content
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Records the content of a leaf element.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">outof-xml-element</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Should be called when unwinding out of an element.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*count-slot-suffix*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*count-type-suffix*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to derive from a schema element's name, if it contains occurrence
+constraints, the name and type of an additional slot definition that is
+created to hold this information (see <span
+class="section"><a href="reasoner.html#section7">Cardinality</a></span>).
+Initially <tt class="sexpr">:count</tt> and <tt class="sexpr">:numbers</tt>.</p>
+
+<h3><a name="sectionA4.1a">Parsing of XML Schema Built-in Datatypes</a></h3>
+
+<p class="bodytext"><span
+class="defn"><a href="#part">parse-as-type</a></span> methods are
+defined for the datatypes enumerated below. All return a
+numeric range; in cases other than <span class="xmldefn">dateTime</span> and <span
+class="xmldefn">time</span> the lower and upper bounds will differ (<em>may</em>
+differ in the case of <span class="xmldefn">duration</span>).</p>
+
+<p class="bodytext"><span class="xmldefn">dateTime</span> and its truncated variants
+(<span class="xmldefn">time</span>,
+<span class="xmldefn">date</span>, <span class="xmldefn">gYearMonth</span>,
+<span class="xmldefn">gYear</span>, <span class="xmldefn">gMonthDay</span>,
+<span class="xmldefn">gDay</span>, <span class="xmldefn">gMonth</span>)
+are represented, viewed as sets of times, by their earliest and latest
+elements, and are converted by <span
+class="defn"><a href="#dte">*date-time-encoding-fn*</a></span>.
+Fractional seconds are ignored.</p>
+
+<p class="bodytext">A <span class="xmldefn">duration</span> is converted to
+a number of seconds. A fraction in the seconds component
+is ignored. Ambiguity arises from the varying lengths of months and years.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="dte"><span class="defn">rse::*date-time-encoding-fn*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Initially <span class="defn">encode-universal-time</span>;
+will reject a negative-signed year. A substitute
+should accept the same arguments that it does.</p>
+
+<h3><a name="sectionA4.2">Integration with Specific Parsers</a></h3>
+
+<h4><a name="sectionA4.2.1">Parse Tree Traversal</a></h4>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">deserialize-as-object</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>element <span
+class="arglist">xml-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Takes as its input an element in the parse tree generated by the <a
+href="http://clocc.sourceforge.net/dist/cllib.html">CLLIB XML Parser</a>. See
+<span class="defn"><a href="#dserobjs">deserialize-as-objects</a></span>.</p>
+
+<h4><a name="sectionA4.2.2">SAX</a></h4>
+
+<p class="bodytext">Both the <a
+href="http://common-lisp.net/project/cxml">
+CXML</a> and <a
+href="http://www.franz.com/support/documentation/current/doc/sax.htm">
+Allegro</a> parsers are supported. If both are present, CXML takes precedence.</p>
+
+<p class="bodytext">A class <span class="defn">deserializer</span> is defined (in package <tt
+class="package">rs-sax</tt>), which can be used in conjunction with the CXML function <span
+class="defn">parse</span>.</p>
+
+<p class="bodytext">For 
+Allegro users, <span class="defn">deserializer</span> is defined in package <tt
+class="package">net.xml.rs</tt>, and can be used with the functions <span
+class="defn">sax-parse-file</span>, <span class="defn">sax-parse-stream</span> and <span
+class="defn">sax-parse-string</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">namespace-missing</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">parser prefix iri
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called if there is no namespace definition corresponding to (having
+the same uri as) a declaration in the document. The default behaviour is to call <span
+class="defn"><a href="#makens">make-namespace</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">default-namespace-missing</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">parser iri
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called if there is no namespace definition having the same uri as the
+default namespace declaration in the document. The default behaviour is to call <span
+class="defn"><a href="#makens">make-namespace</a></span>, passing it a fresh symbol.</p>
+
+</body>
+
+</html>

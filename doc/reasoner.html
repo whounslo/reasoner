@@ -1,0 +1,2096 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+<title>Reference - Common Lisp Reasoner</title>
+<style type="text/css" media="all">
+@import "reasonerdef.css";
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+
+<h1 class="title">Common Lisp Reasoner</h1>
+
+<h3 class="version">Version 3.5</h3>
+
+<h3 class="author">William Hounslow</h3>
+
+<dl>
+<dt>
+<span class="section"><a href="#section1">Overview</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section2">Assumption-Based
+Truth-Maintenance System (ATMS)</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section3">Reasoning Extensions to the
+Object System</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section4">Object Creation</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section5">Ranges</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section6">Reading and Writing Slots</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section7">Cardinality</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section7a">Composite Objects</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#section7a.1">Compound Objects</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section7a.2">Assemblies</a></span>
+</dt>
+</dl>
+</dd><dt>
+<span class="section"><a href="#section8">Class-Changing</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section9">Rule Language</a></span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span class="section"><a href="#section9.1">Note on Lisp Propositions</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section9.2">Note on Use of Relational
+Propositions in Rules</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section9.3">Example Well-Formed Formulae</a></span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span class="section"><a href="#section9a">Automatically-Generated Rules</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section10">Rule Objects</a></span>
+</dt>
+<dt>
+<span class="section"><a href="#section11">Reasoning With Assumed Data</a></span>
+</dt>
+<dt>
+<span class="section"><a href="serialize.html">Appendix: XML Serialization and Deserialization</a></span>
+</dt>
+<dt>
+<span class="section"><a href="triple.html">Appendix: RDF and OWL Compatibility</a></span>
+</dt>
+</dl>
+
+<h2><a name="section1">Overview</a></h2>
+
+<p class="bodytext">This
+document describes a reasoning tool that extends (and is implemented in) the
+Common Lisp Object System (CLOS) and that is intended to be used in a variety
+of practical search and reasoning tasks, including scheduling, planning,
+diagnosis and predictive reasoning. It should be read in conjunction with the
+CLOS specification. Certain features are implemented by means of the CLOS
+Metaobject Protocol (see Kiczales, des Rivieres and Bobrow, <i>The Art of the
+Metaobject Protocol</i>, MIT Press, 1991).</p>
+
+<p class="bodytext">All symbols referred to below are accessible in the
+package <tt class="package">REASONER</tt> (nickname <tt class="package">RS</tt>)
+and external, unless otherwise indicated.</p>
+
+<h2><a name="section2">Assumption-Based Truth-Maintenance System (ATMS)</a></h2>
+
+<p class="bodytext">See: de
+Kleer, ‘An Assumption-Based TMS’, <i>Artificial Intelligence</i>, <i>28</i>
+(1986).</p>
+
+<p class="bodytext">Note:
+Those that wish to access data structures internal to the ATMS (for the pur­poses
+of, say, following a chain of justifications, or obtaining the set of
+assumptions denoted by an environment) should inherit from the package
+<tt class="package">ATMS</tt> in their working package.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="makea"><span class="defn">make-assumption</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">&amp;optional</span> name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Manufactures an assumption.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="disc"><span class="defn">discard-assumption</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">assumption)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Discards
+an assumption, and all internal ATMS data structures that mention it.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="uniq"><span class="defn">uniquify-environment</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>assumptions <span
+class="arglist">list)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> dont-create ordered
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the environment object corresponding to a list of assumptions.
+Unless <span class="argname">ordered</span>
+is non-<span class="defn">nil</span>, the assumptions are first sorted.
+If there is no such object and the <span class="argname">dont-create </span>argument is not supplied
+or is <span class="defn">nil</span>, an object is created;
+otherwise <span class="defn">nil</span> is returned.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">subsumesp</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e1 <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e2 <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines if the assumptions of <span class="argname">e1</span>
+are a subset of those of <span class="argname">e2</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">in-p</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">node)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2">environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines if a node holds in an environment (i.e., an environment
+in the label of <span class="argname">n</span> subsumes <span class="argname">environment</span>).</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">truep</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">node)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines if a node holds in the environment of no assumptions.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="empt"><span class="defn">*empty-environment*</span></a>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The distinguished environment of no assumptions.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">contradictoryp</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>environment <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines if an environment is contradictory.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">reasoner::*falsity*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The distinguished false node.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*atms*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The ATMS used by the reasoning sub-system.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">reinitialize-atms</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Reinitializes
+the above variables: recreates all data structures from scratch.</p>
+
+<h2><a name="section3">Reasoning Extensions to the Object System</a></h2>
+
+<p class="bodytext">The
+basic object system is extended to support the treatment of values in slots of
+instances as data to be reasoned with: reasoning is initiated when a value is
+stored. This behaviour is provided by a special metaclass, <span
+class="defn">extended-class</span>. (This alter­native metaclass is specified
+using the <span class="defn">:metaclass</span> option of
+<span class="defn">defclass</span>.)</p>
+
+<p class="bodytext">The
+class <span class="defn">extended-object</span> is the instance of <span
+class="defn">extended-class</span> that is the super­class of all other instances of
+<span class="defn">extended-class</span> except itself; it is a subclass
+of <span class="defn">standard-object</span>. A class defined with metaclass
+<span class="defn">extended-class</span>
+has <span class="defn">extended-object</span> as its default superclass. In the package
+<tt class="package">REASONER-USER</tt>,
+the metaclass itself defaults to <span class="defn">extended-class</span>.</p> 
+
+<h2><a name="section4">Object Creation</a></h2>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">make-instance</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class-name <span
+class="arglist">&amp;rest</span> initargs
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Creates
+and returns a new instance of a class; is described fully in the CLOS speci­fication.
+When applied to a subclass of the class <span class="defn">extended-object</span>,
+the following initialization arguments are valid:</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">:antecedents</span>
+</td>
+<td class="methsig1" align="right">Initialization Argument
+</td>
+</tr>
+</table>
+
+<p class="bodytext">A list
+of ATMS nodes such as might be supplied to <span
+class="defn"><a href="#add">add-slot-value</a></span>.
+The new instance is justified by the antecedents, so that any values added to
+its slots will inherit the be­lief status(es) of those antecedents.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">:name</span>
+</td>
+<td class="methsig1" align="right">Initialization Argument
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Gives a
+name to the instance. The function <span class="defn"><a href="#find">find-instance</a></span>
+returns the instance named by a symbol. The function <span
+class="defn"><a href="#inst">instance-name</a></span> returns the name of an instance.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="shar"><span class="defn">shared-initialize</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>instance <span
+class="arglist">extended-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2">slot-names
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">&amp;rest</span> initargs
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Implements
+initialization behaviour whereby values for slots are derived from typing
+information, where appropriate. See the CLOS specification.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="find"><span class="defn">find-instance</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">name <span
+class="arglist">&amp;optional</span> errorp
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+the instance named by a symbol. Works analogously to <span class="defn">find-class</span>,
+as de­scribed in the CLOS specification.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="inst"><span class="defn">instance-name</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">instance
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the name of an instance.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="inst"><span class="defn">instance-assumption</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">instance
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">If a single assumption has been used to justify <span
+class="argname">instance</span>, returns that assumption.</p>
+
+<h2><a name="section5">Ranges</a></h2>
+
+<p class="bodytext">A
+restriction can be placed on the values that may be stored in a slot, by
+supplying typing information in the slot specifier (a part of a class
+definition) as described in the CLOS specification. This must be a valid type
+specifier; if it is a class name, slot values must be instances of that class.
+(It may also be a compound type specifier, such as <span class="defn">or</span>,
+mentioning multiple classes.)</p>
+
+<p class="bodytext">We
+extend this mechanism by allowing the type to denote a range of values: either
+an enumerated range of values, or a numeric sub-range (for instance,
+<tt class="sexpr">(cerise crimson cyan)</tt> for a <tt class="sexpr">colour</tt>
+slot, or <tt class="sexpr">(0 137)</tt> for an <tt class="sexpr">age</tt>
+slot). Ranges over symbols (<span class="defn">symbolic-range</span>),
+numbers (<span class="defn">numeric-range</span>) and truth values
+(<span class="defn">true-or-false</span>, <span class="defn">true</span>,
+<span class="defn">false</span>) are provided; the macro <span
+class="defn"><a href="#defr">defrange</a></span> is used to define specialized
+ranges, such as <tt class="sexpr">age-range</tt>.</p>
+
+<p class="bodytext">Besides
+numbers, the distinguished symbols <span class="defn">big</span> and <span
+class="defn">-big</span> may appear in a numeric range.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defr"><span class="defn">defrange</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">name-and-options [documentation-string] <span
+class="arglist">&amp;rest</span> elements
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Defines a new range abbreviation: <span class="argname">elements</span>,
+a sequence of symbols, or between one and two values representing
+the lower and upper bounds of a numeric range, is associated with <span class="argname">name</span>,
+which may be used as the <span class="defn">:type</span> slot option of a slot specifier in
+a <span class="defn">defclass</span> form. Options take the form they do in <span
+class="defn">defstruct</span>; the options that can be given are <span
+class="defn">:include</span>, which takes an argument which is the name of another range
+definition, and <span class="defn">:external-type</span>, which is intended to facilitate
+the translation of numeric values into external formats, such as dates and times.
+The latter option is inherited.</p>
+
+<p class="bodytext">If <span class="argname">elements</span>
+comprises symbols, and there is a range definition naming a superset of those
+symbols, it is located in the type hierarchy below the superset range; numeric
+ranges are always defined as direct sub-types of <span class="defn">numeric-range</span>.
+The <span class="defn">:include</span> option may be used to defeat this behaviour.</p>
+
+<p class="bodytext">Mechanisms
+for combining and determining the inconsistency of values are factored out into
+methods defined on these types.</p>
+
+<p class="bodytext">Slot
+values are sub-ranges (not elements) of the declared range; single values are
+converted to range format when they are stored. Each slot is given an initial
+value derived from its type (by the default <span class="defn"><a
+href="#shar">shared-initialize</a></span> method).
+This represents an initial set of possibilities that subsequent reasoning
+activity acts to narrow. Type checking is thus achieved by the consistency
+checking amongst values that happens whenever a new value is stored.</p>
+
+<p class="bodytext">Generally,
+the new value will coexist with one or more existing value(s). In par­ticular,
+values may hold in differing belief states.</p>
+
+<p class="bodytext">For
+types that are ranges, new values are combined by intersection with each ex­isting
+value: if two values are disjoint, they are contradictory. When a slot is read,
+its values (sub-ranges) are combined to yield the value returned.</p>
+
+<p class="bodytext">For
+instance, we may have deduced that a person is of sixteen years of age or above
+and that they are under 65 from the intelligence that they are married and not
+of pensionable age. Their age slot would contain the values <tt class="sexpr">(0 137)</tt>
+(the initial value), <tt class="sexpr">(16 137)</tt>, and <tt class="sexpr">(0 64)</tt>;
+combination of these values yields <tt class="sexpr">(16 64)</tt>.</p>
+
+<p class="bodytext">The
+following functions may be used to interpret programmatically the result of
+value combination:</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">range-max</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">x
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the upper bound of a numeric range.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">range-min</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">x
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the lower bound of a numeric range.</p>
+
+<h2><a name="section6">Reading and Writing Slots</a></h2>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="add"><span class="defn">add-slot-value</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name new-value antecedents informant
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key &amp;allow-other-keys</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Adds a value to a slot of an instance, justifying it by
+<span class="argname">antecedents</span>, a list of ATMS nodes (i.e., slot values or assumptions).
+If <span class="argname">antecedents</span> is <span class="defn">nil</span> the value is true
+(i.e., it holds universally). If the value is already present, the existing node is re-justified.
+The <span class="argname">informant</span> argument is a problem-solver- (or user-)
+supplied description of the justification.</p>
+
+<p class="bodytext">This behaviour is implemented by
+<span class="defn"><a href="#adduc">add-slot-value-using-class</a></span>,
+which is also responsible for the processing of keyword arguments.</p>
+
+<p class="bodytext">Returns the node corresponding to <span class="argname">new-value</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="adduc"><span class="defn">add-slot-value-using-class</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class object slot new-value antecedents informant
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key</span> slot-name no-check no-count negated
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Implements the behavior of
+<span class="defn"><a href="#add">add-slot-value</a></span>.
+<span class="argname">class</span> is the class of <span class="argname">object</span>.
+<span class="argname">slot</span> is a slot definition object;
+the <span class="argname">slot-name</span> keyword argument defaults to its name.</p>
+
+<p class="bodytext">No checking is done for gross type violations;
+however, the function <span class="defn"><a href="#sat">slot-value-typep</a></span> is
+provided for use by client programs. <span class="argname">new-value</span> is combined with each
+existing value in order to detect con­tradictions; if the values are ranges,
+and one is not a sub-range of the other, their intersection is added to the
+slot. (This behaviour can be inhibited by means of the <span class="argname">no-check</span> keyword
+argument; see also <span class="defn"><a href="#valid">validate-combination</a></span>.)
+The <span class="argname">no-count</span> keyword argument inhibits the automatic updating
+of a slot's count; see <span class="section"><a href="#section7">Cardinality</a></span>.
+The <span class="argname">negated</span> keyword
+argument is used to make an explicit assertion that some (non-range) instance does
+not appear in a slot (e.g., that <tt class="sexpr">joe</tt> is not the spouse
+of <tt class="sexpr">amelia</tt>).</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">slot-definition-missing</span>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class object slot-name operation value antecedents informant
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key &amp;allow-other-keys</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called by
+<span class="defn"><a href="#adduc">add-slot-value-using-class</a></span>
+if the slot definition corresponding to <span class="argname">slot-name</span> is
+missing from <span class="argname">class</span>. The default method signals an error.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="addc"><span class="defn">add-contradiction</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">antecedents
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Records a contradiction;
+used by <span class="defn"><a href="#adduc">add-slot-value-using-class</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="valid"><span class="defn">validate-combination</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">new-node node nodes
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called by <span class="defn"><a
+href="#adduc">add-slot-value-using-class</a></span>
+to determine whether <span class="argname">new-node</span> should be combined with <span
+class="argname">node</span>, an existing node, for the purposes of detecting contradictions
+and creating intersections. <span class="argname">nodes</span>
+is a list of all the existing nodes, most recent arrival first.</p>
+
+<p class="bodytext">Depending upon the nature of the application, much of this work may be
+both time-consuming and unnecessary; an application-specific method may be supplied to
+indicate such cases by returning <span class="defn">nil</span>. The system-supplied method
+returns non-<span class="defn">nil</span> constantly.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="sat"><span class="defn">slot-value-typep</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object type
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines
+if object satisfies type, where <span class="argname">object</span> is an instance,
+symbol, number or range and <span class="argname">type</span> a class, e.g.,</p>
+
+<pre>
+ (slot-value-typep 'true 'true-or-false) =&gt; t
+ (slot-value-typep '(0 100) 'numeric-range) =&gt; t
+</pre>
+
+<p class="bodytext">Automatically-generated reader methods may be specified in
+a <span class="defn">defclass</span> form.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">slot-value-reduce</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Combines
+all the slot values (nodes) that hold in <span class="argname">environment</span>,
+an object returned by the generic function <span class="defn"><a
+href="#uniq">uniquify-environment</a></span>. If <span class="argname">environment</span> is
+<span class="defn">t</span>, all values contained in the slot
+are combined; if omitted, it defaults to <span
+class="defn"><a href="#empt">*empty-environment*</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">contradictory-value</span>
+</td>
+<td class="methsig1" align="right">Constant
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The
+distinguished value returned when slot values cannot be combined.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">contradictory-value-p</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">value
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Predicate that tests for this value.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">slot-values</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+the ATMS nodes in a slot that hold in an environment.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">remove-slot-value</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name value
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key</span> negated recursive
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Removes a value from a slot, and, optionally, all data
+justified solely by it (the default behaviour). If the
+corresponding node does not hold in the environment of no assump­tions, signals
+an error: one cannot remove an assumed datum except by explicitly removing the
+as­sumption, upon which all internal ATMS data structures that mention it are
+removed. See <span class="defn"><a href="#remn">remove-node</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">remove-node :before</span>
+</td>
+<td class="methsig1" align="right">Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">standard-slot-value)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> recursive
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Removes node from its containing slot.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="remn"><span class="defn">remove-node</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">node)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> recursive
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Removes
+node, and, optionally, all data justified solely by it (the default behaviour).</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">remove-node :after</span>
+</td>
+<td class="methsig1" align="right">Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>n <span
+class="arglist">assumption)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> recursive
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Indicates
+that assumption may be garbage-collected: the application will not use it
+further. Calls <span class="defn"><a href="#disc">discard-assumption</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="feta"><span class="defn">fetch-assumption</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>object <span
+class="arglist">extended-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2">slot-name value
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> negated
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the assumption corresponding to an assumed datum.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">fetch-node</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>object <span
+class="arglist">extended-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2">slot-name value
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> negated
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the slot-value node corresponding to a datum.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">elements</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>node <span
+class="arglist">standard-slot-value)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns a list of the value(s) denoted by a slot-value node.</p>
+
+<h2><a name="section7">Cardinality</a></h2>
+
+<p class="bodytext">Where a
+slot holds (non-range) instances, it is possible to associate with it an ad­ditional
+slot that records the number of instances in that slot, being updated auto­matically
+each time a new instance is added. The additional slot is specified in the
+normal way (there must be a <span class="defn">:type</span> slot option that names a
+sub-range of <span class="defn">nu­meric-range</span>);
+the association is made by giving the name of the additional slot as the value
+of the <span class="defn">:count</span> option of the slot specifier of the original slot.</p>
+
+<p class="bodytext">There are predefined ranges <span class="defn">zero-or-one</span>,
+<span class="defn">zero-or-more</span>, <span class="defn">exactly-one</span> and <span
+class="defn">one-or-more</span>.</p>
+
+<h2><a name="section7a">Composite Objects</a></h2>
+
+<p class="bodytext">Instances of the class <span class="defn">composite-object</span>
+have a <span class="defn">parts</span> slot referring to
+one or more closely-related but subordinate objects. The classes of these objects
+must be subclasses of the class <span class="defn">part</span>. Parts may be added
+either at instance creation time or subsequently.</p>
+
+<p class="bodytext">The class has two subclasses: <span class="defn">compound-object</span>
+and <span class="defn">assembly</span>.</p>
+
+<h3><a name="section7a.1">Compound Objects</a></h3>
+
+<p class="bodytext">The <span class="defn">compound-object</span> subclass captures
+the distinction between necessary and contingent membership of a class. For instance,
+a <tt class="sexpr">person</tt> may also be a <tt class="sexpr">catholic</tt> or a
+<tt class="sexpr">police-officer</tt>; these are simpler ideas out of which our
+idea of a person as a whole is formed. This distinction is a useful organizing principle.</p>
+
+<p class="bodytext">Were the subordinate classes to be defined as subclasses of
+<tt class="sexpr">person</tt>, some means of stipulating the admissible compound classes
+(e.g., <tt class="sexpr">catholic-police-officer</tt> but not <tt
+class="sexpr">catholic-buddhist</tt>), either by enumerating them or some other mechanism,
+would be required. Moreover, new parts could not be added dynamically.</p>
+
+<p class="bodytext">A compound object's parts' slots may be read or stored into as if they
+were slots of the object itself. However, within rules the parts must be
+referred to explicitly.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">:part</span>
+</td>
+<td class="methsig1" align="right">Initialization Argument
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to supply a part to a compound object at creation time.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">:parts</span>
+</td>
+<td class="methsig1" align="right">Initialization Argument
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Used to supply a list of parts to a compound object at creation time.</p>
+
+<h3><a name="section7a.2">Assemblies</a></h3>
+
+<p class="bodytext">An assembly is a group of objects that are created together.</p>
+
+<p class="bodytext">When an assembly instance is created, slots whose contents have been
+defined as of type <span class="defn">component</span>, and for which no value is specified
+in the initialization argument list, are filled automatically. The number of
+component instances that are created is determined by the lower bound of
+of the slot's count (see <span class="section"><a href="#section7">Cardinality</a></span>).
+If it has no count, one instance is created.</p>
+
+<p class="bodytext">Each component, created or supplied, is added to the <span
+class="defn">parts</span> slot of the assembly.</p>
+
+<p class="bodytext">A component can, of course, also be an assembly. Specialized
+<span class="defn">initialize-instance</span> methods may be written to detect
+circularities or to create shared parts.</p>
+
+<h2><a name="section8">Class-Changing</a></h2>
+
+<p class="bodytext">Class-changing,
+in which the structure of an instance is modified to reflect a new class, may
+be employed, with the proviso that the target class be below the existing class
+in the inheritance hierarchy.</p>
+
+<p class="bodytext">However, a value stored in a slot of an instance might not trigger an
+inference as expected after its class is changed. For example, if a value is stored in the
+<tt class="sexpr">children</tt> slot of a <tt class="sexpr">parent</tt> instance, and then
+that instance is changed to a <tt class="sexpr">grandparent</tt>, a rule that refers to the
+<tt class="sexpr">children</tt> of a <tt class="sexpr">grandparent</tt> will not succeed.
+To enable such inferences, use:</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="remn"><span class="defn">notice-slot-values</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>instance <span
+class="arglist">extended-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> predicate
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Intended to be called after changing the class of <span
+class="argname">instance</span>. Ensures that values stored in its slots that satisfy <span
+class="argname">predicate</span> (by default, all
+those that hold in a non-empty environment) have been noticed by the reasoning procedure.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="clas"><span class="defn">classify</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>instance <span
+class="arglist">extended-object)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>class <span
+class="arglist">extended-class)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2">environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Finds
+class(es) most subordinate to <span class="argname">class</span>, under which <span
+class="argname">instance</span> falls (may fall). Returns a list of classes.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">map-slots</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class function
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;key</span> direct from-end
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Applies <span class="argname">function</span>
+to each element of an ordered list of slot definitions for <span class="argname">class</span>;
+used by <span class="defn"><a href="#clas">classify</a></span>. <span
+class="argname">direct</span> indicates that slot definitions local to <span
+class="argname">class</span> only be used. <span class="argname">from-end </span>determines
+whether the most or least subordinate of those slot definitions with the same
+name be used; a type specifier in a subordinate slot definition should always
+be a subtype of one in a superior definition.</p>
+
+<h2><a name="section9">Rule Language</a></h2>
+
+<p class="bodytext">The
+reasoning procedure takes as inputs values stored into slots and a corpus of im­plicitly
+universally quantified logical expressions (rules and constraints, known
+collectively as well-formed formulae) written by the user, and produces unit
+steps called consumers, each of which represents an individual inference. A
+separate scheduling procedure (see <span class="defn"><a href="#sche">schedule</a></span>)
+takes each consumer and constructs a new da­tum (slot value), along with a
+justification, which records the derivation of that da­tum.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defc"><span class="defn">defconstraint</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">name [qualifier] declarations <span
+class="arglist">&amp;rest</span> constraint-body
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">A
+constraint is an arbitrary logical expression, from which all possible
+inferences are derived.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="defru"><span class="defn">defrule</span></a>
+</td>
+<td class="methsig1" align="right">Macro
+</td>
+</tr>
+<tr>
+<td class="methsig2">name [qualifier] declarations <span
+class="arglist">&amp;rest</span> rule-body
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">A rule
+has a distinguished head, the truth of which the rule acts to determine.</p>
+
+<div style="border:solid windowtext .75pt">
+
+<table border="0">
+<tr>
+<td><i>qualifier</i>::=</td><td><tt>:assume</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>declarations</i>::=</td>
+<td><tt>(</tt>{<tt>(</tt><i>variable-name class-name</i><tt>)</tt>}+<tt>)</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>constraint-body</i>::=</td><td>[<i>documentation-string</i>] <i>expression</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>rule-body</i>::=</td>
+<td><i>if-body</i> | <i>iff-body</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>if-body</i>::=</td>
+<td>[<i>documentation-string</i>] [<i>disjunction</i> <tt>-&gt;</tt>] <i>compound-head</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>iff-body</i>::=</td>
+<td>[<i>documentation-string</i>] <i>disjunction</i> <tt>&lt;-&gt;</tt> <i>head</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>compound-head</i>::=</td>
+<td><i>head</i> [<tt>and</tt> <i>compound-head</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>head</i>::=</td>
+<td>[<tt>not</tt>] <i>proposition</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>expression</i>::=</td>
+<td><i>condition</i> [<tt>-&gt;</tt> <i>expression</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>condition</i>::=</td>
+<td><i>disjunction</i> [<tt>&lt;-&gt;</tt> <i>condition</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>disjunction</i>::=</td>
+<td><i>conjunction</i> [<tt>or</tt> <i>disjunction</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>conjunction</i>::=</td>
+<td><i>primary</i> [<tt>and</tt> <i>conjunction</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>primary</i>::=</td>
+<td><i>proposition</i> | <tt>not</tt> <i>primary</i> | <tt>(</tt><i>expression</i><tt>)</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>proposition</i>::=</td><td><i>lisp-proposition</i> |</td>
+</tr>
+<tr>
+<td></td><td><i>literal-proposition</i> |</td>
+</tr>
+<tr>
+<td></td><td><i>relational-proposition</i> |</td>
+</tr>
+<tr>
+<td></td><td><i>numeric-or-arithmetic-proposition</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>lisp-proposition</i>::=</td>
+<td><tt>lisp</tt> <tt>(</tt><i>function-name</i> {<i>arg</i>}+<tt>)</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>arg</i>::=</td><td><tt>(</tt><i>variable-name class-name</i><tt>)</tt> |</td>
+</tr>
+<tr>
+<td></td><td><i>attribute-reference</i> |</td>
+</tr>
+<tr>
+<td></td><td><i>number</i> | <i>string</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>attribute-reference</i>::=</td><td><i>variable-name slot-name</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>literal-proposition</i>::=</td><td><i>attribute-reference</i> {</td>
+</tr>
+<tr>
+<td></td><td><tt>is</tt> <i>symbol</i> |</td>
+</tr>
+<tr>
+<td></td><td><tt>is in</tt> <tt>(</tt>{<i>symbol</i>}+<tt>)</tt> |</td>
+</tr>
+<tr>
+<td></td><td><tt>is in</tt> <i>range-class-name</i> |</td>
+</tr>
+<tr>
+<td></td><td><tt>is</tt> [<tt>in</tt>] <i>attribute-reference</i>}</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>relational-proposition</i>::=</td>
+<td><i>attribute-reference</i> [<tt>is</tt> | <tt>includes</tt>] <i>variable-name</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>numeric-or-arithmetic-proposition</i>::=</td><td><i>attribute-reference</i> {</td>
+</tr>
+<tr>
+<td></td><td><tt>is in</tt> <i>numeric-range</i> |</td>
+</tr>
+<tr>
+<td></td><td><tt>is in</tt> <i>range-class-name</i> |</td>
+</tr>
+<tr>
+<td></td><td><tt>is</tt> <i>number</i> |</td>
+</tr>
+<tr>
+<td></td><td><i>relation arithmetic-rhs</i>}</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>numeric-range</i>::=</td><td><tt>(</tt><i>number number</i><tt>)</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>relation</i>::=</td>
+<td><tt>=</tt> | <tt>&gt;</tt> | <tt>&lt;</tt> | <tt>&gt;=</tt> | <tt>&lt;=</tt> | <tt>/=</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>arithmetic-rhs</i>::=</td><td><i>arithmetic-expr</i> |</td>
+</tr>
+<tr>
+<td></td><td>{ <tt>aggregate-min</tt> | <tt>aggregate-max</tt> | <tt>aggregate-sum</tt> }</td>
+</tr>
+<tr>
+<td></td><td><tt>(</tt><i>relational-attribute-reference</i> <i>numeric-attribute-reference</i><tt>)</tt> |</td>
+</tr>
+<tr>
+<td></td><td>{ <tt>min</tt> | <tt>max</tt> } <tt>(</tt>{<i>attribute-reference</i> | <i>number</i> }+<tt>)</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>arithmetic-expr</i>::=</td><td><i>mult-term</i> [<i>plus-op arithmetic-expr</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>mult-term</i>::=</td><td><i>factor</i> [<i>mult-op mult-term</i>]</td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>factor</i>::=</td>
+<td><tt>(</tt><i>arithmetic-expr</i><tt>)</tt> | <i>number</i> | <i>attribute-reference</i> | <tt>-</tt> <i>factor</i></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>plus-op</i>::=</td><td><tt>+</tt> | <tt>-</tt></td>
+</tr>
+</table>
+
+<table border="0">
+<tr>
+<td><i>mult-op</i>::=</td><td><tt>*</tt> | <tt>/</tt></td>
+</tr>
+</table>
+
+</div>
+
+<h3><a name="section9.1">Note on Lisp Propositions</a></h3>
+
+<p class="bodytext">The
+function is applied to the arguments specified; variables and attribute
+references are de-referenced, but other arguments are not evaluated. If the
+proposition is in the head of a rule, the function will be passed two
+additional arguments: the antecedents that triggered the rule, and an
+informant, to use if it installs a justification (see <span
+class="defn"><a href="#add">add-slot-value</a></span>).
+Not intended for use in constraints.</p>
+
+<h3><a name="section9.2">Note on the Use of Relational Propositions in
+Rules</a></h3>
+
+<p class="bodytext">If the last <span class="defn"><a href="#defru">defrule</a></span>
+example below, with a relational proposition in its body and a <tt
+class="sexpr">&lt;-&gt;</tt> connective, were written straightforwardly, the negation
+of the head of the rule would never be inferred. (This is because the logical expressions
+into which the compiler translates the rule do not exactly reflect the intention of the rule
+writer.) The formulation used enables all the intended inferences, and is safe
+provided the negation of the relational proposition in the body of the rule is
+not asserted.</p>
+
+<h3><a name="section9.3">Example Well-Formed Formulae</a></h3>
+
+<pre>
+(defconstraint pensionable ((p person)) &quot;Pensionable age rule.&quot;
+  p age &gt; 64 or p sex is female and p age &gt; 59
+  &lt;-&gt;
+  p of-pensionable-age is true)
+
+(defconstraint income ((p person))
+  p income = p benefit + p earnings)
+
+(defrule paternity ((child person) (mum person) (dad person))
+  child mother is mum
+  and mum spouse is dad
+  and child eye-colour is dad eye-colour
+  -&gt; child father is dad)
+
+(defrule combined-age-of-children ((p person) (c person))
+  p children includes c
+  -&gt; p combined-age-of-children = aggregate-sum (p children c age))
+
+(defrule qualifying-accounts ((cb credit-balance)
+                              (sa share-account))
+  cb accounts-held-in includes sa -&gt;           ; See note above.
+    cb accounts-held-in includes sa and
+    sa account-name is in qualifying-share-account-names
+  &lt;-&gt;
+  cb qualifying-accounts-held-in includes sa)
+</pre>
+
+<h2><a name="section9a">Automatically-Generated Rules</a></h2>
+
+<p class="bodytext"><span class="defn">defclass</span> slot specifiers take two additional
+options, <span class="defn">:composition</span> and <span class="defn">:inverse</span>, which
+define a slot in terms of one or more others and sanction the derivation of values when those
+slots are stored into. The latter option takes a single value, a (non-range-valued) slot name.
+The former may be one of <span class="defn">:symmetric</span> or <span
+class="defn">:transitive</span>, or alternatively a list of one or more slot names, such as
+<tt class="sexpr">(parent brother)</tt> for determining the value of an <tt
+class="sexpr">uncle</tt> slot.</p>
+
+<h2><a name="section10">Rule Objects</a></h2>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rule-compile</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>wff <span
+class="arglist">well-formed-formula)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Compiles
+a well-formed formula; invoked automatically when a <span
+class="defn"><a href="#defc">defconstraint</a></span>
+or <span class="defn"><a href="#defru">defrule</a></span> form is evaluated.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">uncompile</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>wff <span
+class="arglist">well-formed-formula)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Undoes
+the effects of a compilation: the wff no longer participates in reasoning.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*trace-rule-failure*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Controls
+the printing of information about the point of failure during the evaluation of
+rules and constraints.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">*rule-trace-output*</span>
+</td>
+<td class="methsig1" align="right">Variable
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The
+stream to which trace information is printed; initially <span class="defn">*trace-output*</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rules-using</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class slot-name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+the rules and constraints that notice data stored in the given slot.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">rules-affecting</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">class slot-name
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+the rules that can affect the contents of the given slot. (A constraint,
+being non-directional, can affect all the slots it notices.)</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="slotu"><span class="defn">slots-used</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>wff <span
+class="arglist">well-formed-formula)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+a list of attribute references denoting those slots noticed by a rule or con­straint.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="slota"><span class="defn">slot-affected</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>wff <span
+class="arglist">forward-rule)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns
+an attribute reference denoting the slot affected by a rule. (A constraint
+can affect a slot if it notices it.)</p>
+
+<p class="bodytext">The
+result of <span class="defn"><a href="#slota">slot-affected</a></span> and
+<span class="defn"><a href="#slotu">slots-used</a></span> can be examined by means
+of the fol­lowing accessor functions:</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">attribute-reference-class</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">attribute-reference
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the class-name component of an attribute reference.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">attribute-name</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">attribute-reference
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Returns the slot-name component of an attribute reference.</p>
+
+<h2><a name="section11">Reasoning With Assumed Data</a></h2>
+
+<p class="bodytext">Problem
+solving with the ATMS requires the making of appropriate assumptions, followed
+by a search of the space of environments (i.e., combinations of assump­tions),
+smallest first, for a solution.</p>
+
+<p class="bodytext">The former task is accomplished using <span
+class="defn"><a href="#assv">assume-slot-value</a></span>,
+or, if the datum to be assumed is an arbitrary logical expression (this will appear in an
+inferred datum’s justification just like the other data that trigger an inference), by
+using the <span class="defn">:assume</span> qualifier accepted by the <span
+class="defn"><a href="#defc">defconstraint</a></span> and <span
+class="defn"><a href="#defru">defrule</a></span> macros.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="assv"><span class="defn">assume-slot-value</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object slot-name value
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> assumption no-check<span
+class="arglist"></span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Uses <span class="defn"><a href="#add">add-slot-value</a></span>;
+<span class="argname">no-check</span> defaults to non-<span class="defn">nil</span>.
+If <span class="argname">assumption</span>
+is omitted or is <span class="defn">nil</span>, manufactures one with <span
+class="defn"><a href="#makea">make-assumption</a></span>. Returns assumption.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="assu"><span class="defn">assume-slot-values</span></a>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object initargs
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> catchall-assumption no-check<span
+class="arglist"></span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Utility function for assuming multiple slot values. Uses <span
+class="defn"><a href="#assv">assume-slot-value</a></span>. If <span
+class="argname">catchall-assumption</span> is
+supplied, it is used exclusively; if a value has previously been assumed (see
+<span class="defn"><a href="#feta">fetch-assumption</a></span>), that assumption
+is used; otherwise assumptions are created. Returns a list of assumptions.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="back"><span class="defn">backtrack</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>control-disjunctions <span
+class="arglist">list)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">A
+recursive backtracking scheme appropriate where a solution must select exactly
+one choice from each of a number of sets, and where the solution does not
+depend on the order in which choices are made. See: de Kleer and Williams,
+‘Back to Backtracking: Controlling the ATMS’, AAAI-86.</p>
+
+<p class="bodytext">For optimal performance, the order in which the assumption
+sets are created and the order in which they appear in <span
+class="argname">control-disjunctions</span> should be the same.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">atms:oneof-disjunction</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>assumptions <span
+class="arglist">list)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> no-check
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Records every pair from <span class="argname">assumptions</span>
+as contradictory. May be used to stipulate mutually-exclusive choices in addition to the
+control disjunctions. If <span class="argname">no-check</span> is non-<span
+class="defn">nil</span> (the default), no checking for previously-recorded conflicts
+is performed.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="ord"><span class="defn">order-control-disjunction</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object e assumptions
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called by <span class="defn"><a href="#back">backtrack</a></span>.
+An application-specific method may reorder and return <span class="argname">assumptions</span>
+(a control disjunction). The first element of the returned value is then added to <span
+class="argname">e</span> (the partial solution).
+<span class="argname">object</span> is the instance of which the assumed datum of the first
+assumption is a slot value.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="added"><span class="defn">added-assumption</span></a>
+</td>
+<td class="methsig1" align="right">Generic Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">object a assumptions
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Called
+if <span class="argname">a</span>, the selected assumption, is successfully added to
+<span class="argname">assumptions </span>(i.e.,
+a consistent environment results). <span class="argname">object</span> is as above. An
+application-specific method can be supplied to detect contradictions
+explicitly. See <span class="defn"><a href="#addc">add-contradiction</a></span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="sche"><span class="defn">schedule</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Runs all consumers in all subsets of an environment. For the
+environment {<i>A, B, C</i>}, consumers are executed in the order: {<i>A</i>},
+{<i>B</i>}, {<i>A, B</i>}, {<i>C</i>}, {<i>A, C</i>}, {<i>B, C</i>}, {<i>A,
+B, C</i>}. Returns a list of consistent subsets. See the
+<a href="reasoner.html#back">paper</a> by de Kleer and Williams.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">nschedule</span>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The non-consing version of <span class="defn"><a
+href="#sche">schedule</a></span>. Environments are executed in size order and those
+of the same size in an arbitrary order.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><a name="solu"><span class="defn">solutions</span></a>
+</td>
+<td class="methsig1" align="right">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>choices <span
+class="arglist">list)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span
+class="arglist">&amp;optional</span> dont-create
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">An
+ATMS-guided generate-and-test search regime. Supersets of <span class="argname">e</span>
+are enumerated by incorporating assumptions from <span class="argname">choices</span>
+and those that are consistent and maximal (i.e., with respect to <span
+class="argname">choices</span>) returned. No environment objects will
+be created if <span class="argname">dont-create</span> is non-<span class="defn">nil</span>.</p>
+
+<table border="0" width="100%">
+<tr>
+<td class="methsig"><span class="defn">describe-data</span>
+</td>
+<td class="methsig1" align="right">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Describes the assumed data of
+<span class="argname">environment</span>, which may be an object or a list of assumptions.</p>
+
+</body>
+
+</html>

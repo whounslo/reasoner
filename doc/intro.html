@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+<title>Common Lisp Reasoner</title>
+<style type="text/css" media="all">
+@import "reasoner.css";
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+
+  <div id="header">
+    <div class="titlebar">
+      <div class="title">
+        <h1>Common Lisp Reasoner</h1>
+        <h3>Version 3.5</h3>
+      </div>
+      <div class="menubar">
+        <ul>
+          <li class="nav"><a href="mailto:whounslo@gmail.com">Contact</a></li>
+          <li class="nav"><a href="demos.html">Demonstrations</a></li>
+          <li class="nav"><a href="reasoner.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+<h2>Introduction</h2>
+
+<p class="bodytext">The Common Lisp Reasoner project aims to create a practical
+technology that exploits the synergy between its three major components to make
+AI-related applications, such as scheduling and diagnosis, easier to develop.
+These components are:</p>
+
+<ul>
+<li>A portable extension of the Common Lisp Object System (CLOS)</li>
+<li>The Assumption-Based Truth-Maintenance System (ATMS) of de Kleer</li>
+<li>A rule language comprising non-directional constraints as well as
+    unidirectional rules</li>
+</ul>
+
+<p class="bodytext">Because CLOS permits, by means of the
+<a href="http://www.alu.org/mop">Metaobject Protocol</a>, open-ended
+extension, it is both the implementation language and the kernel of the
+implemented system, within which a set of sound principles appropriate to the
+practice of knowledge representation rather than programming have been
+realized.</p>
+
+<p class="bodytext">In reasoning applications, the values stored into the slots
+of an instance (the data to be reasoned with) are accumulated rather than
+replaced. Permitted values are specified in the class of the instance. They are
+either other instances, or enumerated ranges of (mutually exclusive) values that
+may subsequently be narrowed by reasoning activity.</p>
+
+<p class="bodytext">Each stored value is encapsulated in an ATMS <em>node</em>—a
+record not only of the value, but also its <em>justification</em> (derivation) and
+the resultant belief states (or <em>environments</em>), determined by the ATMS,
+in which it holds. An environment is given by a set of primitive <em>assumptions</em>;
+an assumption constitutes an explicit, problem-specific decision to assume some
+datum or data. The ATMS enables environments to be explored systematically and
+efficiently. Contradictions are isolated and recorded as <em>nogoods</em>.</p>
+
+<p class="bodytext">The rule language permits the expression of arbitrarily
+complex logical sentences. The slot definitions of classes collectively
+constitute a vocabulary of attributes that can be referred to in rule definitions.
+When reasoning, classes and instances provide an efficient means of retrieving
+rules and the data upon which they operate.</p>
+
+<figure id="fig1">
+<img src="strata.png" alt="Stratification Diagram"/>
+</figure>
+
+<h2>Latest Features</h2>
+
+<p class="bodytext"><em>RDF and OWL.</em> Earlier <span
+class="section"><a href="serialize.html">XML serialization and deserialization</a></span>
+capabilities have been extended to support <span
+class="section"><a href="triple.html">RDF/XML</a></span>.
+Features have been added (primarily <span
+class="section"><a href="reasoner.html#section9a">automatically-generated rules</a></span>)
+to offer limited support for OWL ontologies.</p>
+
+<p class="bodytext"><em>Parallelism.</em> The rule matching cycle has been redesigned to
+work in parallel. Parallelism is enabled when used in conjunction with <a
+href="http://lparallel.org">Lisp in Parallel</a>.</p>
+
+<h2>Historical Note</h2>
+
+<p class="bodytext">The design outlined above was conceived in relation to the
+development of legal reasoning applications, in order to meet some exacting
+requirements: to capture the explicit and implicit exceptions inherent in legal
+language, to accommodate conflicting rules which give rise to competing arguments,
+and to derive all inferences sanctioned by a logical sentence by restricting the
+values of attributes.</p>
+
+<h2>Compatibility</h2>
+
+<p class="bodytext">The source code has been tested in
+<a href="http://www.franz.com">Allegro</a>,
+<a href="http://www.clisp.org">CLISP</a>,
+<a href="http://ecls.sourceforge.net/">ECL</a>,
+<a href="http://www.lispworks.com">LispWorks</a>
+and <a href="http://www.sbcl.org">SBCL</a>.
+Further compatibility information may be found in the release notes.</p>
+
+</body>
+
+</html>
