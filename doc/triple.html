@@ -11,7 +11,7 @@ table.names {
   font-family: sans-serif;
 }
 </style>
-<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 </head>
 
 <body>
@@ -22,15 +22,18 @@ table.names {
 <dt>
 <span class="section"><a href="reasoner.html">Main Document</a></span>
 </dt>
+<dd>
 </dl>
 
 <dl>
 <dt>
 <span class="section"><a href="#sectionB1">Overview</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#sectionB2">Usage Examples</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#sectionB3">Serialization and Deserialization</a></span>
 </dt>
@@ -45,11 +48,12 @@ table.names {
 <dt>
 <span class="section"><a href="#sectionB3.2">RDF and OWL Deserialization</a></span>
 </dt>
+<dd>
 </dl>
 </dd>
 </dl>
 
-<h2><a name="sectionB1">Overview</a></h2>
+<h2><a id="sectionB1">Overview</a></h2>
 
 <p class="bodytext">For an introduction to RDF and OWL, consult the <a
 href="http://www.w3.org/TR/rdf-primer/">RDF Primer</a> and the <a
@@ -92,10 +96,10 @@ sufficient as well as necessary conditions for membership.</p>
 additional properties, whose values can then be sought.</p>
 
 <p class="bodytext">In contrast, a primary purpose of OWL DL is to enable one to state
-that, e.g., ‘<tt class="sexpr">WhiteWine</tt> is exactly the intersection of the class
-<tt class="sexpr">Wine</tt> and the set of things that are white in colour’.
+that, e.g., &lsquo;<code class="sexpr">WhiteWine</code> is exactly the intersection of the class
+<code class="sexpr">Wine</code> and the set of things that are white in colour&rsquo;.
 This amounts to stating that the instances to which this description applies are
-<em>called</em> <tt class="sexpr">WhiteWine</tt>.</p>
+<em>called</em> <code class="sexpr">WhiteWine</code>.</p>
 
 <p class="bodytext">The overlap with OWL, therefore, is roughly the OWL Lite subset. The
 knowledge representation facilities outlined above do not constitute, as a
@@ -110,12 +114,16 @@ accepted by <span class="defn">find-class</span> and
 <span class="defn"><a href="reasoner.html#find">find-instance</a></span>)
 with a single object.</p>
 
-<table width="95%" border="2" class="names">
-<tr>
-<th colspan="4" align="left">
+<div id="names">
+<style scoped>
+  table { border: 1px solid; width: 95%}
+  td, th { border: 1px solid; padding: 5}
+</style>
+<table class="names">
+<caption>
 Table 1: Implemented Language Subsets
-</th>
-</tr>
+</caption>
+<thead>
 <tr>
 <th>
 &nbsp;
@@ -130,6 +138,8 @@ RDFS
 OWL
 </th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <th>
 Attributes
@@ -179,33 +189,35 @@ imports, priorVersion, backwardCompatibleWith, incompatibleWith,
 AnnotationProperty, OntologyProperty, DeprecatedClass, DeprecatedProperty
 </td>
 </tr>
+</tbody>
 </table>
+</div>
 
 <p class="bodytext">User-defined datatypes are used to denote enumerated sets of
 values and numeric subranges.</p>
 
-<h2><a name="sectionB2">Usage Examples</a></h2>
+<h2><a id="sectionB2">Usage Examples</a></h2>
 
 <p class="bodytext">There are example formalizations (ontology fragments) of so-called
 <a href="stuff.rdf">stuff</a> (with associated <a href="stuff.xsd">datatypes</a>)
 and <a href="disease.rdf">medical terms</a> (plus <a href="disease.xsd">datatypes</a>).</p>
 
-<h2><a name="sectionB3">Serialization and Deserialization</a></h2>
+<h2><a id="sectionB3">Serialization and Deserialization</a></h2>
 
 <p class="bodytext">The following should be read in conjunction with <a
 href="serialize.html">XML Serialization and Deserialization.</a></p>
 
-<p class="bodytext">In whatever combination is appropriate, <tt
-class="sexpr">:owl</tt>, <tt class="sexpr">:rdfs</tt> and
-<tt class="sexpr">:rdf</tt> should appear in <span
-class="defn"><a href="serialize.html#nsp">*namespaces*</a></span>; <tt class="sexpr">:owl</tt>,
-if present, must precede <tt class="sexpr">:rdfs</tt>.</p>
+<p class="bodytext">In whatever combination is appropriate, <code
+class="sexpr">:owl</code>, <code class="sexpr">:rdfs</code> and
+<code class="sexpr">:rdf</code> should appear in <span
+class="defn"><a href="serialize.html#nsp">*namespaces*</a></span>; <code class="sexpr">:owl</code>,
+if present, must precede <code class="sexpr">:rdfs</code>.</p>
 
 <p class="bodytext">The value of <span class="defn"><a
 href="serialize.html#tarnsp">*target-namespace*</a></span> is interpreted as
 the base URI of the document.</p>
 
-<h3><a name="sectionB3.0">Resource Classes</a></h3>
+<h3><a id="sectionB3.0">Resource Classes</a></h3>
 
 <p class="bodytext">The distinction between <span class="xmldefn">rdfs:Class</span> and <span
 class="xmldefn">owl:Class</span> (the latter being a subclass of the
@@ -221,11 +233,11 @@ class="xmldefn">rdfs:Resource</span>.</p>
 multilingual labels, corresponding to <span class="xmldefn">rdfs:label</span> elements
 of a class or property.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">class-label</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -239,11 +251,11 @@ of a class or property.</p>
 <p class="bodytext">Returns multilingual label information for class, the value of the <span
 class="defn">:label</span> initialization argument.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">slot-definition-label</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -261,11 +273,11 @@ class="defn">:label</span> initialization argument.</p>
 a single string (if supplied as a <span class="defn">defclass</span> class option), or a
 list of language-label pairs:</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">resource-label-lang</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -278,11 +290,11 @@ list of language-label pairs:</p>
 
 <p class="bodytext">Returns the language tag associated with the label.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">resource-label-text</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -297,22 +309,22 @@ list of language-label pairs:</p>
 
 <p class="bodytext">During deserialization information is always stored in this form.</p>
 
-<h3><a name="sectionB3.1">RDF and OWL Serialization</a></h3>
+<h3><a id="sectionB3.1">RDF and OWL Serialization</a></h3>
 
 <p class="bodytext">The generic functions <span class="defn"><a
 href="serialize.html#serobj">serialize-object</a></span>, <span
 class="defn"><a href="serialize.html#serclass">serialize-class</a></span> and
 <span class="defn"><a href="serialize.html#serclassh">serialize-class-hierarchy</a></span>
-accept <tt class="sexpr">:rdf</tt>, <tt class="sexpr">:rdfs</tt> or
-<tt class="sexpr">:owl</tt> as their <span class="argname">format</span> argument. <span
+accept <code class="sexpr">:rdf</code>, <code class="sexpr">:rdfs</code> or
+<code class="sexpr">:owl</code> as their <span class="argname">format</span> argument. <span
 class="defn"><a href="serialize.html#serobj">serialize-object</a></span>
 will only recursively serialize unnamed objects.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="serobj"><span class="defn">serialize-objects</span></a>
+<td class="methsig"><a id="serobj"><span class="defn">serialize-objects</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -347,11 +359,11 @@ capture all the information in the CLOS hierarchy. When applied to an instance o
 <span class="defn">range-class</span>, it generates a single <span
 class="xmldefn">rdfs:Datatype</span> element.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*allow-multiple-domains*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -363,11 +375,11 @@ class="xmldefn">rdfs:Property</span> definition.
 If <span class="defn">nil</span> (the default) it will reflect only the most general slot
 description in the hierarchy.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="wirdf"><span class="defn">with-rdf</span></a>
+<td class="methsig"><a id="wirdf"><span class="defn">with-rdf</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -384,11 +396,11 @@ class="arglist">)</span> {form}*
 href="serialize.html#wixml">with-xml</a></span>, enclosing
 <span class="argname">form</span>s in an <span class="xmldefn">rdf:RDF</span> element.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">with-ontology</span>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -407,7 +419,7 @@ incorporating an <span class="xmldefn">owl:Ontology</span> element. <span
 class="argname">about</span> is used to set the base URI of the document; the value of <span
 class="xmldefn">rdf:about</span> attribute is left empty.</p>
 
-<h3><a name="sectionB3.2">RDF and OWL Deserialization</a></h3>
+<h3><a id="sectionB3.2">RDF and OWL Deserialization</a></h3>
 
 <p class="bodytext">Both property specialization and property characteristics
 (other than <span class="xmldefn">owl:FunctionalProperty</span>) are implemented by
@@ -418,8 +430,8 @@ href="reasoner.html#section9a">automatically-generated rules</a></span>.</p>
 kind of property specialization: a rule is generated to propagate values that satisfy the
 restriction to a specially-created slot with restricted cardinality. In addition, the effect of
 <span class="xmldefn">hasValue</span> (OWL DL) can be achieved by specialization
-to individuals (i.e., by defining a class, say, <tt class="sexpr">no-other-than-foo</tt>
-that has a single instance, <tt class="sexpr">foo</tt>).</p>
+to individuals (i.e., by defining a class, say, <code class="sexpr">no-other-than-foo</code>
+that has a single instance, <code class="sexpr">foo</code>).</p>
 
 <p class="bodytext">RDF containers and collections are unimplemented.</p>
 
@@ -427,11 +439,11 @@ that has a single instance, <tt class="sexpr">foo</tt>).</p>
 But see <span
 class="defn"><a href="serialize.html#defie">define-ignored-elements</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rse::*class-slot-specifications*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -440,11 +452,11 @@ class="defn"><a href="serialize.html#defie">define-ignored-elements</a></span>.<
 definitions, to be processed upon reaching a closing <span
 class="xmldefn">rdf:RDF</span> tag.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">with-deserialization-unit</span>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>

@@ -18,7 +18,7 @@ span.defn {
   font-weight: bold;
 }
 </style>
-<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 </head>
 
 <body>
@@ -41,9 +41,14 @@ span.defn {
 
 <h2>Demonstrations</h2>
 
-<p><em>Names of functions are located in the package </em><tt class="package">RS-USER</tt>.</p>
+<p><em>Names of functions are located in the package </em><code class="package">RS-USER</code>.</p>
 
-<table class="demos" width="95%" border="1" cellpadding="5">
+<div id="demos">
+<style scoped>
+  table { border: 1px solid gray; width: 95%}
+  td, th { border: 1px solid gray; padding: 5}
+</style>
+<table class="demos">
 <tr class="demos">
 <th>
 Demonstration
@@ -175,8 +180,9 @@ career.lisp
 </td>
 </tr>
 </table>
+</div>
 
-<h2><a name="note">Note on Non-Monotonic Reasoning</a></h2>
+<h2><a id="note">Note on Non-Monotonic Reasoning</a></h2>
 
 <p>Non-monotonic (or defeasible) reasoning is the the norm in practical, everyday
 problem-solving: it is reasoning under conditions of uncertainty, from incomplete or
@@ -190,8 +196,8 @@ a person's employment status made from their employment history.</p>
 <p>The ATMS is used to realize non-monotonic reasoning by entirely extra-logical
 means.</p>
 
-<p>The <em>counterfactuals</em> demonstration concerns statements of the form ‘if
-such-and-such were the case, then such-and-such would be the case’. It employs a treatment
+<p>The <em>counterfactuals</em> demonstration concerns statements of the form &lsquo;if
+such-and-such were the case, then such-and-such would be the case&rsquo;. It employs a treatment
 of such statements not simply as implicational rules whose antecedent happens to be false,
 but as elliptical arguments. One counterfactual can be defeated by another: they
 sanction conclusions which may be contradicted by subsequently-acquired information.</p>
@@ -200,10 +206,10 @@ sanction conclusions which may be contradicted by subsequently-acquired informat
 from an additional observation of the faulty system's behaviour.</p>
 
 <p>The <em>planning</em> demonstrations illustrate the formulation of the actions relevant to
-(e.g.) a simple ‘blocks world’ problem as axioms whose consequent contradicts their antecedent.
+(e.g.) a simple &lsquo;blocks world&rsquo; problem as axioms whose consequent contradicts their antecedent.
 The law of contradiction is used to construct a new situation or possible world, given by a
 set of statements (i.e., slot values), comprising the consequent and all features of a
-previous situation that are consistent with it: information is ‘carried over’ from one
+previous situation that are consistent with it: information is &lsquo;carried over&rsquo; from one
 situation to another in the absence of knowledge to the contrary.</p>
 
 </body>

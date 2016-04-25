@@ -8,7 +8,7 @@
 <style type="text/css" media="all">
 @import "reasonerdef.css";
 </style>
-<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 </head>
 
 <body>
@@ -19,15 +19,18 @@
 <dt>
 <span class="section"><a href="reasoner.html">Main Document</a></span>
 </dt>
+<dd>
 </dl>
 
 <dl>
 <dt>
 <span class="section"><a href="#sectionA1">Overview</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#sectionA2">Namespaces and Prefixes</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#sectionA3">XML Serialization</a></span>
 </dt>
@@ -45,6 +48,7 @@
 <dt>
 <span class="section"><a href="#sectionA3.4">XML Schema Built-in Datatypes</a></span>
 </dt>
+<dd>
 </dl>
 </dd>
 <dt>
@@ -72,13 +76,14 @@
 <dt>
 <span class="section"><a href="#sectionA4.2.2">SAX</a></span>
 </dt>
+<dd>
 </dl>
 </dd>
 </dl>
 </dd>
 </dl>
 
-<h2><a name="sectionA1">Overview</a></h2>
+<h2><a id="sectionA1">Overview</a></h2>
 
 <p class="bodytext">Classes (as an XML schema) and instances, including rules, may be
 serialized. (Those unfamiliar with XML should read the following in
@@ -89,20 +94,20 @@ Part 0: Primer Second Edition</a>.)</p>
 to perform the reverse operation.</p>
 
 <p class="bodytext">All symbols referred to below are accessible in the package
-<tt class="package">REASONER-EXT</tt> (nickname <tt class="package">RS-EXT</tt>)
+<code class="package">REASONER-EXT</code> (nickname <code class="package">RS-EXT</code>)
 and external, unless otherwise indicated.</p>
 
-<h2><a name="sectionA2">Namespaces and Prefixes</a></h2>
+<h2><a id="sectionA2">Namespaces and Prefixes</a></h2>
 
 <p class="bodytext">XML names that belong to a particular namespace are stored in a Lisp
 package associated with a namespace name (a symbol); this name (converted
 to a lower case string) is used to qualify the names of the namespace in serialized output.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defns"><span class="defn">defnamespace</span></a>
+<td class="methsig"><a id="defns"><span class="defn">defnamespace</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -117,11 +122,11 @@ class="arglist">(:documentation</span> string<span class="arglist">)</span>]
 <p class="bodytext">Associates <span class="argname">namespace-name</span> with <span
 class="argname">uri</span> and a set of Lisp-style, symbol or string, names.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="makens"><span class="defn">make-namespace</span></a>
+<td class="methsig"><a id="makens"><span class="defn">make-namespace</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -138,11 +143,11 @@ The <span class="argname">package</span>
 argument is used to associate the namespace with an existing Lisp package. Signals
 an error if a package is already associated with the namespace.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="ensp"><span class="defn">ensure-namespace-package</span></a>
+<td class="methsig"><a id="ensp"><span class="defn">ensure-namespace-package</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -156,24 +161,24 @@ an error if a package is already associated with the namespace.</p>
 <p class="bodytext">Returns the package associated with a namespace name, setting it if none
 exists.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*namespace-package-prefix*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Used by <span class="defn"><a href="#ensp">ensure-namespace-package</a></span>
 when creating a Lisp package associated
-with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
+with a namespace name. Initially <code class="sexpr">:xml</code>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">namespace-package</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -183,11 +188,11 @@ with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
 </td>
 </tr>
 </table>
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">(setf namespace-package)</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -200,11 +205,11 @@ with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
 
 <p class="bodytext">Retrieves or sets the package associated with a namespace name.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">namespace-uri</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -214,11 +219,11 @@ with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
 </td>
 </tr>
 </table>
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">(setf namespace-uri)</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -231,15 +236,15 @@ with a namespace name. Initially <tt class="sexpr">:xml</tt>.</p>
 
 <p class="bodytext">Retrieves or sets the uri (a string) associated with a namespace name.</p>
 
-<h2><a name="sectionA3">XML Serialization</a></h2>
+<h2><a id="sectionA3">XML Serialization</a></h2>
 
 <p class="bodytext">Names are formatted in the standard XML mixed-case style.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*emphasize-type-name*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -250,11 +255,11 @@ capitalized.</p>
 
 <p class="bodytext">Serialized output is sent to <span class="defn">*standard-output*</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">redirect-to-stream</span>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -268,11 +273,11 @@ capitalized.</p>
 <p class="bodytext">Redirects <span class="defn">*standard-output*</span> to <span
 class="argname">stream</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*xml-print-pretty*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -280,22 +285,22 @@ class="argname">stream</span>.</p>
 <p class="bodytext">Determines whether elements are printed on separate lines and
 indented; initially non-<span class="defn">nil</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*xml-pprint-indent*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Determines how far inner elements are indented; initially 2.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*separate-definitions*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -303,13 +308,13 @@ indented; initially non-<span class="defn">nil</span>.</p>
 <p class="bodytext">Determines whether, within a schema or ruleset, a blank line is inserted
 between definitions; initially non-<span class="defn">nil</span>.</p>
 
-<h3><a name="sectionA3.1">Classes</a></h3>
+<h3><a id="sectionA3.1">Classes</a></h3>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">with-schema</span>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -326,18 +331,18 @@ class="arglist">)</span> {form}*
 <p class="bodytext">Incorporates the output of the <span class="argname">form</span>s
 in a schema element. <span class="argname">documentation</span> is a documentation string,
 used to annotate the schema; <span class="argname">documentation-lang</span> defaults to
-<tt class="sexpr">:en</tt>.</p>
+<code class="sexpr">:en</code>.</p>
 
 <p class="bodytext"><span class="argname">target-namespace</span> is a prefix used to
 determine the value of the <span class="xmldefn">targetNamespace</span> attribute of the
 schema element, and to create a temporary binding of <span class="defn"><a
 href="#tarnsp">*target-namespace*</a></span>.
-Defaults to <tt class="sexpr">:xsd</tt>, denoting the <a
+Defaults to <code class="sexpr">:xsd</code>, denoting the <a
 href="http://www.w3.org/2001/XMLSchema">XML Schema namespace</a>.</p>
 
 <p class="bodytext"><span class="argname">namespaces</span> is used to create a temporary
 binding of <span class="defn"><a href="#nsp">*namespaces*</a></span>.
-Defaults to <tt class="sexpr">(list :xsd)</tt>.</p>
+Defaults to <code class="sexpr">(list :xsd)</code>.</p>
 
 <p class="bodytext"><span class="argname">default-namespace</span> is used to create a
 temporary binding of <span class="defn"><a href="#defnsp">*default-namespace*</a></span>.</p>
@@ -347,11 +352,11 @@ class="xmldefn">elementFormDefault</span> and <span class="xmldefn">attributeFor
 are governed by <span class="defn"><a href="#qual">*qualified-local-elements*</a></span> and
 <span class="defn"><a href="#qual">*qualified-local-attributes*</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">as-top-level-element</span>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -366,11 +371,11 @@ class="arglist">&amp;optional</span> type
 <p class="bodytext">Outputs a top-level element declaration. If <span class="argname">type</span>
 is omitted, it will be the same as <span class="argname">name</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="serclassh"><span class="defn">serialize-class-hierarchy</span></a>
+<td class="methsig"><a id="serclassh"><span class="defn">serialize-class-hierarchy</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -386,9 +391,9 @@ class="arglist">&amp;optional</span> format tangled derived
 class="argname">root</span> is the root, as a sequence of <span
 class="xmldefn">complexType</span> (<span class="xmldefn">simpleType</span> if it is a
 <span class="defn">range-class</span>) elements.
-<span class="argname">format</span> defaults to <tt class="sexpr">:xml</tt>.</p>
+<span class="argname">format</span> defaults to <code class="sexpr">:xml</code>.</p>
 
-<p class="bodytext">If <span class="argname">format</span> is <tt class="sexpr">:xml</tt>,
+<p class="bodytext">If <span class="argname">format</span> is <code class="sexpr">:xml</code>,
 signals an error if any of the classes have multiple superclasses, unless
 <span class="argname">tangled</span> is non-<span class="defn">nil</span>. In this case,
 the rightmost superclass is used as the base type and the derived type will contain all
@@ -397,11 +402,11 @@ the elements (i.e., slot definitions) inherited from the other superclasses.</p>
 <p class="bodytext">If <span class="argname">derived</span> is non-<span
 class="defn">nil</span>, a derived type will be output for the root class.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="serclass"><span class="defn">serialize-class</span></a>
+<td class="methsig"><a id="serclass"><span class="defn">serialize-class</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -428,23 +433,23 @@ class="defn">nil</span>) <span class="xmldefn">complexType</span> definition.</p
 superclass, two derived type definitions will be output, with the
 extended type being the subordinate of the restricted type.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*restricted-type-suffix*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Used to construct the restricted type name from the class name; initially
-<tt class="sexpr">:restricted</tt>.</p>
+<code class="sexpr">:restricted</code>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">serialize-class</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -461,11 +466,11 @@ class="arglist">(eql :xml))</span>
 <span class="xmldefn">integer</span> if a subclass of <span class="defn">numeric-range</span>,
 or <span class="xmldefn">string</span> otherwise.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="ulst"><span class="defn">*use-list-simple-types*</span></a>
+<td class="methsig"><a id="ulst"><span class="defn">*use-list-simple-types*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -478,13 +483,13 @@ has not been narrowed to a single value there will be no element content and
 the <span class="xmldefn">nil</span> attribute of the element will be set, whereas in the former
 case element content will comprise a list of values.</p>
 
-<h3><a name="sectionA3.2">Instances</a></h3>
+<h3><a id="sectionA3.2">Instances</a></h3>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="wixml"><span class="defn">with-xml</span></a>
+<td class="methsig"><a id="wixml"><span class="defn">with-xml</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -509,11 +514,11 @@ class="argname">default-namespace</span> are used to create temporary
 bindings for <span class="defn"><a href="#nsp">*namespaces*</a></span>
 and <span class="defn"><a href="#defnsp">*default-namespace*</a></span>, respectively.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="tarnsp"><span class="defn">*target-namespace*</span></a>
+<td class="methsig"><a id="tarnsp"><span class="defn">*target-namespace*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -525,11 +530,11 @@ and <span class="defn"><a href="#qual">*qualified-local-attributes*</a></span> a
 to exert further control over qualification.) Is added at the front of
 <span class="defn"><a href="#nsp">*namespaces*</a></span>, if not already present.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="nsp"><span class="defn">*namespaces*</span></a>
+<td class="methsig"><a id="nsp"><span class="defn">*namespaces*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -537,7 +542,7 @@ to exert further control over qualification.) Is added at the front of
 <p class="bodytext">A list of prefixes corresponding to the namespaces that should be
 declared at the beginning of an element. Names belonging to a namespace
 in this list will be qualified, unless it is also the default namespace.
-Initially set to <tt class="sexpr">(list :xsi)</tt> (<tt class="sexpr">:xsi</tt> denotes the <a
+Initially set to <code class="sexpr">(list :xsi)</code> (<code class="sexpr">:xsi</code> denotes the <a
 href="http://www.w3.org/2001/XMLSchema-instance">XMLSchema instance
 namespace</a>).</p>
 
@@ -547,11 +552,11 @@ the name's home package. Upon failure, it is searched again, for the first
 package in which there is a symbol with the same <span
 class="defn">symbol-name</span> as the name.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defnsp"><span class="defn">*default-namespace*</span></a>
+<td class="methsig"><a id="defnsp"><span class="defn">*default-namespace*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -559,19 +564,19 @@ class="defn">symbol-name</span> as the name.</p>
 <p class="bodytext">Prefix indicating the namespace, if any, that should be declared as the
 default at the beginning of an element.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="qual"><span class="defn">*qualified-local-elements*</span></a>
+<td class="methsig"><a id="qual"><span class="defn">*qualified-local-elements*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*qualified-local-attributes*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -582,24 +587,24 @@ to the target namespace are qualified. Correspond to the schema attributes
 class="xmldefn">attributeFormDefault</span>.
 Both are initially <span class="defn">nil</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*xml-id-attribute*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">The name of the uniquely-identifying (unqualified) attribute that will
-be associated with elements corresponding to named instances; initially <tt
-class="sexpr">:name</tt>.</p>
+be associated with elements corresponding to named instances; initially <code
+class="sexpr">:name</code>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="serobj"><span class="defn">serialize-object</span></a>
+<td class="methsig"><a id="serobj"><span class="defn">serialize-object</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -639,7 +644,7 @@ added according to the values of <span class="defn"><a href="#nsp">*namespaces*<
 will be qualified with <span class="defn"><a href="#tarnsp">*target-namespace*</a></span>,
 if non-<span class="defn">nil</span> and not the default namespace.</p>
 
-<p class="bodytext"><span class="argname">global</span> is set to <span
+<p class="bodytext"><span class="argname">global</span> is bound to <span
 class="defn">nil</span> for recursively
 serialized objects. The qualification of local elements and attributes is governed by
 <span class="defn"><a href="#qual">*qualified-local-elements*</a></span> and
@@ -650,11 +655,11 @@ the <span class="defn">:count</span> slot option in the instance's class definit
 then the missing instances will be created beforehand. If there is no such slot
 option, a value of 1 is used.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rse::*unique-name-fn*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -662,11 +667,11 @@ option, a value of 1 is used.</p>
 <p class="bodytext">Designates a function of one argument, a class name, that is used to
 generate unique names for instances.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="sersl"><span class="defn">serialize-slot</span></a>
+<td class="methsig"><a id="sersl"><span class="defn">serialize-slot</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -684,11 +689,11 @@ class="defn"><a href="#serobj">serialize-object</a></span>.</p>
 <p class="bodytext">A method can be supplied in order to inhibit the serialization of
 a particular slot.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="fat"><span class="defn">format-as-type</span></a>
+<td class="methsig"><a id="fat"><span class="defn">format-as-type</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -705,11 +710,11 @@ datatype associated with the range, or the name of the range itself. See <span
 class="defn"><a href="reasoner.html#defr">defrange</a></span>. The default method returns an
 XML-style name, if appropriate; if not, the object itself.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="pat"><span class="defn">print-as-type</span></a>
+<td class="methsig"><a id="pat"><span class="defn">print-as-type</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -724,11 +729,11 @@ XML-style name, if appropriate; if not, the object itself.</p>
 class="defn">princ</span> on the value
 returned by <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">range-to-content</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -747,16 +752,16 @@ Should be overridden if a <span
 class="defn"><a href="#pat">print-as-type</a></span> method always requires
 access to all elements of a range.</p>
 
-<h3><a name="sectionA3.3">Rules</a></h3>
+<h3><a id="sectionA3.3">Rules</a></h3>
 
 <p class="bodytext">An XML schema for the rule language is in <a href="reasoner.xsd">
 reasoner.xsd</a>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">serialize-rules</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -772,13 +777,13 @@ class="arglist">&amp;optional</span> format comment
 names), enclosing them in a <span class="xmldefn">ruleSet</span> element, incorporating
 namespace declarations according to <span class="defn"><a href="#nsp">*namespaces*</a></span>
 and <span class="defn"><a href="#defnsp">*default-namespace*</a></span>.
-<span class="argname">format</span> defaults to <tt class="sexpr">:xml</tt>.</p>
+<span class="argname">format</span> defaults to <code class="sexpr">:xml</code>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">serialize-rule</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -791,18 +796,18 @@ and <span class="defn"><a href="#defnsp">*default-namespace*</a></span>.
 
 <p class="bodytext">Serializes a rule (<span class="defn">well-formed-formula</span>) instance.</p>
 
-<h3><a name="sectionA3.4">XML Schema Built-in Datatypes</a></h3>
+<h3><a id="sectionA3.4">XML Schema Built-in Datatypes</a></h3>
 
 <p class="bodytext"><span class="defn"><a href="#pat">print-as-type</a></span>
 methods are defined for the datatypes mentioned in the section
 <span class="section"><a href="#sectionA4.1a">Parsing of XML Schema Built-in
 Datatypes</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rse::*date-time-decoding-fn*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -810,7 +815,7 @@ Datatypes</a></span>.</p>
 <p class="bodytext">Used to decode a range bound representing a time. Initially <span
 class="defn">decode-universal-time</span>.</p>
 
-<h2><a name="sectionA4">XML Deserialization</a></h2>
+<h2><a id="sectionA4">XML Deserialization</a></h2>
 
 <p class="bodytext">The deserialization operation utilizes an external XML parser.</p>
 
@@ -818,11 +823,11 @@ class="defn">decode-universal-time</span>.</p>
 parse tree, or expose an interface (e.g., SAX) that enables parsing to be interleaved
 with subsequent processing.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="dserobjs"><span class="defn">deserialize-as-objects</span></a>
+<td class="methsig"><a id="dserobjs"><span class="defn">deserialize-as-objects</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -855,11 +860,11 @@ a temporary binding for <span class="defn"><a href="#tarnsp">*target-namespace*<
 and defaults to the value of <span class="argname">namespace</span> (see <span
 class="section"><a href="triple.html">RDF and OWL Compatibility</a></span>).</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="dserobj"><span class="defn">deserialize-as-object</span></a>
+<td class="methsig"><a id="dserobj"><span class="defn">deserialize-as-object</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -896,11 +901,11 @@ the <span class="defn">cdar</span> of the node;
 Uses a <span class="section"><a href="#sectionA4.1">low-level interface</a></span>
 that is also compatible with the second category of parsers.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*assumptions*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -908,11 +913,11 @@ that is also compatible with the second category of parsers.</p>
 <p class="bodytext">Captures assumptions created during deserialization. Rebound by
 <span class="defn"><a href="#dserobjs">deserialize-as-objects</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*assumption*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -920,11 +925,11 @@ that is also compatible with the second category of parsers.</p>
 <p class="bodytext">If assigned a single assumption, will be used in place of
 any number of assumptions that would otherwise be created.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defie"><span class="defn">define-ignored-elements</span></a>
+<td class="methsig"><a id="defie"><span class="defn">define-ignored-elements</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -939,22 +944,22 @@ any number of assumptions that would otherwise be created.</p>
 belonging to <span class="argname">namespace-name</span>, whose presence should not affect
 the processing of surrounding elements in an XML document.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*ignored-elements*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">The full list of elements that are to be treated as no-ops.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*count-subelements*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -964,11 +969,11 @@ class="defn">nil</span>), will eliminate the considerable
 overhead of maintaining a count of subelements, if there are many. See <span
 class="section"><a href="reasoner.html#section7">Cardinality</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><span class="defn">count-subelements-p</span></a>
+<td class="methsig"><span class="defn">count-subelements-p</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -982,7 +987,7 @@ class="section"><a href="reasoner.html#section7">Cardinality</a></span>.</p>
 <p class="bodytext">The system-supplied method examines the above variable. May be
 specialized to exert finer-grained control.</p>
 
-<h3><a name="sectionA4.0">Processing of XML Schema Subelements</a></h3>
+<h3><a id="sectionA4.0">Processing of XML Schema Subelements</a></h3>
 
 <p class="bodytext">A <span class="xmldefn">complexType</span> definition is always
 treated as corresponding to a CLOS class definition.</p>
@@ -1004,19 +1009,19 @@ processing is performed beyond that for <span class="xmldefn">sequence</span>.</
 <p class="bodytext">Named <span class="xmldefn">group</span> elements are not
 recognized.</p>
 
-<h3><a name="sectionA4.1">General Parsing Interface</a></h3>
+<h3><a id="sectionA4.1">General Parsing Interface</a></h3>
 
 <p class="bodytext">Usually, an XML name is converted into a Lisp equivalent,
 with hyphens inserted at the points marked by a transition between lower and
 upper case. However, if <span class="defn">readtable-case</span>,
-when called with the current readtable, returns <tt class="sexpr">:preserve</tt>,
+when called with the current readtable, returns <code class="sexpr">:preserve</code>,
 the XML variant will be used exclusively.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="findxn"><span class="defn">find-xml-name</span></a>
+<td class="methsig"><a id="findxn"><span class="defn">find-xml-name</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1036,11 +1041,11 @@ class="argname">errorp</span> is <span class="defn">nil</span>. For use with
 element names. See <span class="defn"><a href="#defns">defnamespace</a></span>,
 <span class="defn"><a href="#defie">define-ignored-elements</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="intxn"><span class="defn">intern-xml-name</span></a>
+<td class="methsig"><a id="intxn"><span class="defn">intern-xml-name</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1058,11 +1063,11 @@ class="argname">namespace</span>, which can be either a uri
 the name is not already present in one of the members of <span class="defn"><a
 href="#nsp">*namespaces*</a></span>, it is interned in the current package.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="part"><span class="defn">parse-as-type</span></a>
+<td class="methsig"><a id="part"><span class="defn">parse-as-type</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1081,11 +1086,11 @@ class="defn">nil</span> is returned,
 <span class="defn"><a href="#intxn">intern-xml-name</a></span>.
 See <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">into-xml-element</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1098,11 +1103,11 @@ See <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
 
 <p class="bodytext">Should be called when an element is first encountered.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">store-xml-content</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1115,30 +1120,30 @@ See <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
 
 <p class="bodytext">Records the content of a leaf element.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">outof-xml-element</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Should be called when unwinding out of an element.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*count-slot-suffix*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*count-type-suffix*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -1147,9 +1152,9 @@ See <span class="defn"><a href="#fat">format-as-type</a></span>.</p>
 constraints, the name and type of an additional slot definition that is
 created to hold this information (see <span
 class="section"><a href="reasoner.html#section7">Cardinality</a></span>).
-Initially <tt class="sexpr">:count</tt> and <tt class="sexpr">:numbers</tt>.</p>
+Initially <code class="sexpr">:count</code> and <code class="sexpr">:numbers</code>.</p>
 
-<h3><a name="sectionA4.1a">Parsing of XML Schema Built-in Datatypes</a></h3>
+<h3><a id="sectionA4.1a">Parsing of XML Schema Built-in Datatypes</a></h3>
 
 <p class="bodytext"><span
 class="defn"><a href="#part">parse-as-type</a></span> methods are
@@ -1172,11 +1177,11 @@ Fractional seconds are ignored.</p>
 a number of seconds. A fraction in the seconds component
 is ignored. Ambiguity arises from the varying lengths of months and years.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="dte"><span class="defn">rse::*date-time-encoding-fn*</span></a>
+<td class="methsig"><a id="dte"><span class="defn">rse::*date-time-encoding-fn*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -1185,15 +1190,15 @@ is ignored. Ambiguity arises from the varying lengths of months and years.</p>
 will reject a negative-signed year. A substitute
 should accept the same arguments that it does.</p>
 
-<h3><a name="sectionA4.2">Integration with Specific Parsers</a></h3>
+<h3><a id="sectionA4.2">Integration with Specific Parsers</a></h3>
 
-<h4><a name="sectionA4.2.1">Parse Tree Traversal</a></h4>
+<h4><a id="sectionA4.2.1">Parse Tree Traversal</a></h4>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">deserialize-as-object</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1209,7 +1214,7 @@ class="arglist">xml-object)</span>
 href="http://clocc.sourceforge.net/dist/cllib.html">CLLIB XML Parser</a>. See
 <span class="defn"><a href="#dserobjs">deserialize-as-objects</a></span>.</p>
 
-<h4><a name="sectionA4.2.2">SAX</a></h4>
+<h4><a id="sectionA4.2.2">SAX</a></h4>
 
 <p class="bodytext">Both the <a
 href="http://common-lisp.net/project/cxml">
@@ -1217,21 +1222,21 @@ CXML</a> and <a
 href="http://www.franz.com/support/documentation/current/doc/sax.htm">
 Allegro</a> parsers are supported. If both are present, CXML takes precedence.</p>
 
-<p class="bodytext">A class <span class="defn">deserializer</span> is defined (in package <tt
-class="package">rs-sax</tt>), which can be used in conjunction with the CXML function <span
+<p class="bodytext">A class <span class="defn">deserializer</span> is defined (in package <code
+class="package">rs-sax</code>), which can be used in conjunction with the CXML function <span
 class="defn">parse</span>.</p>
 
 <p class="bodytext">For 
-Allegro users, <span class="defn">deserializer</span> is defined in package <tt
-class="package">net.xml.rs</tt>, and can be used with the functions <span
+Allegro users, <span class="defn">deserializer</span> is defined in package <code
+class="package">net.xml.rs</code>, and can be used with the functions <span
 class="defn">sax-parse-file</span>, <span class="defn">sax-parse-stream</span> and <span
 class="defn">sax-parse-string</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">namespace-missing</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1246,11 +1251,11 @@ class="defn">sax-parse-string</span>.</p>
 the same uri as) a declaration in the document. The default behaviour is to call <span
 class="defn"><a href="#makens">make-namespace</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">default-namespace-missing</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>

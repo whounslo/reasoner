@@ -8,7 +8,7 @@
 <style type="text/css" media="all">
 @import "reasonerdef.css";
 </style>
-<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"/>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 </head>
 
 <body>
@@ -23,26 +23,33 @@
 <dt>
 <span class="section"><a href="#section1">Overview</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section2">Assumption-Based
 Truth-Maintenance System (ATMS)</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section3">Reasoning Extensions to the
 Object System</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section4">Object Creation</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section5">Ranges</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section6">Reading and Writing Slots</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section7">Cardinality</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section7a">Composite Objects</a></span>
 </dt>
@@ -54,10 +61,13 @@ Object System</a></span>
 <dt>
 <span class="section"><a href="#section7a.2">Assemblies</a></span>
 </dt>
+<dd>
 </dl>
-</dd><dt>
+</dd>
+<dt>
 <span class="section"><a href="#section8">Class-Changing</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section9">Rule Language</a></span>
 </dt>
@@ -73,26 +83,32 @@ Propositions in Rules</a></span>
 <dt>
 <span class="section"><a href="#section9.3">Example Well-Formed Formulae</a></span>
 </dt>
+<dd>
 </dl>
 </dd>
 <dt>
 <span class="section"><a href="#section9a">Automatically-Generated Rules</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section10">Rule Objects</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="#section11">Reasoning With Assumed Data</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="serialize.html">Appendix: XML Serialization and Deserialization</a></span>
 </dt>
+<dd>
 <dt>
 <span class="section"><a href="triple.html">Appendix: RDF and OWL Compatibility</a></span>
 </dt>
+<dd>
 </dl>
 
-<h2><a name="section1">Overview</a></h2>
+<h2><a id="section1">Overview</a></h2>
 
 <p class="bodytext">This
 document describes a reasoning tool that extends (and is implemented in) the
@@ -100,30 +116,30 @@ Common Lisp Object System (CLOS) and that is intended to be used in a variety
 of practical search and reasoning tasks, including scheduling, planning,
 diagnosis and predictive reasoning. It should be read in conjunction with the
 CLOS specification. Certain features are implemented by means of the CLOS
-Metaobject Protocol (see Kiczales, des Rivieres and Bobrow, <i>The Art of the
-Metaobject Protocol</i>, MIT Press, 1991).</p>
+Metaobject Protocol (see Kiczales, des Rivieres and Bobrow, <cite>The Art of the
+Metaobject Protocol</cite>, MIT Press, 1991).</p>
 
 <p class="bodytext">All symbols referred to below are accessible in the
-package <tt class="package">REASONER</tt> (nickname <tt class="package">RS</tt>)
+package <code class="package">REASONER</code> (nickname <code class="package">RS</code>)
 and external, unless otherwise indicated.</p>
 
-<h2><a name="section2">Assumption-Based Truth-Maintenance System (ATMS)</a></h2>
+<h2><a id="section2">Assumption-Based Truth-Maintenance System (ATMS)</a></h2>
 
 <p class="bodytext">See: de
-Kleer, ‘An Assumption-Based TMS’, <i>Artificial Intelligence</i>, <i>28</i>
+Kleer, &lsquo;An Assumption-Based TMS&rsquo;, <cite>Artificial Intelligence</cite>, <cite>28</cite>
 (1986).</p>
 
 <p class="bodytext">Note:
-Those that wish to access data structures internal to the ATMS (for the pur­poses
+Those that wish to access data structures internal to the ATMS (for the pur&shy;poses
 of, say, following a chain of justifications, or obtaining the set of
 assumptions denoted by an environment) should inherit from the package
-<tt class="package">ATMS</tt> in their working package.</p>
+<code class="package">ATMS</code> in their working package.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="makea"><span class="defn">make-assumption</span></a>
+<td class="methsig"><a id="makea"><span class="defn">make-assumption</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -143,11 +159,11 @@ class="arglist">atms)</span>
 
 <p class="bodytext">Manufactures an assumption.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="disc"><span class="defn">discard-assumption</span></a>
+<td class="methsig"><a id="disc"><span class="defn">discard-assumption</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -169,11 +185,11 @@ class="arglist">assumption)</span>
 <p class="bodytext">Discards
 an assumption, and all internal ATMS data structures that mention it.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="uniq"><span class="defn">uniquify-environment</span></a>
+<td class="methsig"><a id="uniq"><span class="defn">uniquify-environment</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -206,11 +222,11 @@ If there is no such object and the <span class="argname">dont-create </span>argu
 or is <span class="defn">nil</span>, an object is created;
 otherwise <span class="defn">nil</span> is returned.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">subsumesp</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -232,11 +248,11 @@ class="arglist">environment)</span>
 <p class="bodytext">Determines if the assumptions of <span class="argname">e1</span>
 are a subset of those of <span class="argname">e2</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">in-p</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -257,11 +273,11 @@ class="arglist">node)</span>
 <p class="bodytext">Determines if a node holds in an environment (i.e., an environment
 in the label of <span class="argname">n</span> subsumes <span class="argname">environment</span>).</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">truep</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -275,22 +291,22 @@ class="arglist">node)</span>
 
 <p class="bodytext">Determines if a node holds in the environment of no assumptions.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="empt"><span class="defn">*empty-environment*</span></a>
+<td class="methsig"><a id="empt"><span class="defn">*empty-environment*</span></a>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">The distinguished environment of no assumptions.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">contradictoryp</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -304,33 +320,33 @@ class="arglist">environment)</span>
 
 <p class="bodytext">Determines if an environment is contradictory.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">reasoner::*falsity*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">The distinguished false node.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*atms*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
 
 <p class="bodytext">The ATMS used by the reasoning sub-system.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">reinitialize-atms</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 </table>
@@ -338,33 +354,33 @@ class="arglist">environment)</span>
 <p class="bodytext">Reinitializes
 the above variables: recreates all data structures from scratch.</p>
 
-<h2><a name="section3">Reasoning Extensions to the Object System</a></h2>
+<h2><a id="section3">Reasoning Extensions to the Object System</a></h2>
 
 <p class="bodytext">The
 basic object system is extended to support the treatment of values in slots of
 instances as data to be reasoned with: reasoning is initiated when a value is
 stored. This behaviour is provided by a special metaclass, <span
-class="defn">extended-class</span>. (This alter­native metaclass is specified
+class="defn">extended-class</span>. (This alter&shy;native metaclass is specified
 using the <span class="defn">:metaclass</span> option of
 <span class="defn">defclass</span>.)</p>
 
 <p class="bodytext">The
 class <span class="defn">extended-object</span> is the instance of <span
-class="defn">extended-class</span> that is the super­class of all other instances of
+class="defn">extended-class</span> that is the super&shy;class of all other instances of
 <span class="defn">extended-class</span> except itself; it is a subclass
 of <span class="defn">standard-object</span>. A class defined with metaclass
 <span class="defn">extended-class</span>
 has <span class="defn">extended-object</span> as its default superclass. In the package
-<tt class="package">REASONER-USER</tt>,
+<code class="package">REASONER-USER</code>,
 the metaclass itself defaults to <span class="defn">extended-class</span>.</p> 
 
-<h2><a name="section4">Object Creation</a></h2>
+<h2><a id="section4">Object Creation</a></h2>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">make-instance</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -377,15 +393,15 @@ class="arglist">&amp;rest</span> initargs
 </table>
 
 <p class="bodytext">Creates
-and returns a new instance of a class; is described fully in the CLOS speci­fication.
+and returns a new instance of a class; is described fully in the CLOS speci&shy;fication.
 When applied to a subclass of the class <span class="defn">extended-object</span>,
 the following initialization arguments are valid:</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">:antecedents</span>
 </td>
-<td class="methsig1" align="right">Initialization Argument
+<td class="methsig1">Initialization Argument
 </td>
 </tr>
 </table>
@@ -394,13 +410,13 @@ the following initialization arguments are valid:</p>
 of ATMS nodes such as might be supplied to <span
 class="defn"><a href="#add">add-slot-value</a></span>.
 The new instance is justified by the antecedents, so that any values added to
-its slots will inherit the be­lief status(es) of those antecedents.</p>
+its slots will inherit the be&shy;lief status(es) of those antecedents.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">:name</span>
 </td>
-<td class="methsig1" align="right">Initialization Argument
+<td class="methsig1">Initialization Argument
 </td>
 </tr>
 </table>
@@ -410,11 +426,11 @@ name to the instance. The function <span class="defn"><a href="#find">find-insta
 returns the instance named by a symbol. The function <span
 class="defn"><a href="#inst">instance-name</a></span> returns the name of an instance.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="shar"><span class="defn">shared-initialize</span></a>
+<td class="methsig"><a id="shar"><span class="defn">shared-initialize</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -442,11 +458,11 @@ class="arglist">extended-object)</span>
 initialization behaviour whereby values for slots are derived from typing
 information, where appropriate. See the CLOS specification.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="find"><span class="defn">find-instance</span></a>
+<td class="methsig"><a id="find"><span class="defn">find-instance</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -460,13 +476,13 @@ class="arglist">&amp;optional</span> errorp
 
 <p class="bodytext">Returns
 the instance named by a symbol. Works analogously to <span class="defn">find-class</span>,
-as de­scribed in the CLOS specification.</p>
+as de&shy;scribed in the CLOS specification.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="inst"><span class="defn">instance-name</span></a>
+<td class="methsig"><a id="inst"><span class="defn">instance-name</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -479,11 +495,11 @@ as de­scribed in the CLOS specification.</p>
 
 <p class="bodytext">Returns the name of an instance.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="inst"><span class="defn">instance-assumption</span></a>
+<td class="methsig"><span class="defn">instance-assumption</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -497,7 +513,7 @@ as de­scribed in the CLOS specification.</p>
 <p class="bodytext">If a single assumption has been used to justify <span
 class="argname">instance</span>, returns that assumption.</p>
 
-<h2><a name="section5">Ranges</a></h2>
+<h2><a id="section5">Ranges</a></h2>
 
 <p class="bodytext">A
 restriction can be placed on the values that may be stored in a slot, by
@@ -510,24 +526,24 @@ mentioning multiple classes.)</p>
 <p class="bodytext">We
 extend this mechanism by allowing the type to denote a range of values: either
 an enumerated range of values, or a numeric sub-range (for instance,
-<tt class="sexpr">(cerise crimson cyan)</tt> for a <tt class="sexpr">colour</tt>
-slot, or <tt class="sexpr">(0 137)</tt> for an <tt class="sexpr">age</tt>
+<code class="sexpr">(cerise crimson cyan)</code> for a <code class="sexpr">colour</code>
+slot, or <code class="sexpr">(0 137)</code> for an <code class="sexpr">age</code>
 slot). Ranges over symbols (<span class="defn">symbolic-range</span>),
 numbers (<span class="defn">numeric-range</span>) and truth values
 (<span class="defn">true-or-false</span>, <span class="defn">true</span>,
 <span class="defn">false</span>) are provided; the macro <span
 class="defn"><a href="#defr">defrange</a></span> is used to define specialized
-ranges, such as <tt class="sexpr">age-range</tt>.</p>
+ranges, such as <code class="sexpr">age-range</code>.</p>
 
 <p class="bodytext">Besides
 numbers, the distinguished symbols <span class="defn">big</span> and <span
 class="defn">-big</span> may appear in a numeric range.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defr"><span class="defn">defrange</span></a>
+<td class="methsig"><a id="defr"><span class="defn">defrange</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -570,30 +586,30 @@ activity acts to narrow. Type checking is thus achieved by the consistency
 checking amongst values that happens whenever a new value is stored.</p>
 
 <p class="bodytext">Generally,
-the new value will coexist with one or more existing value(s). In par­ticular,
+the new value will coexist with one or more existing value(s). In par&shy;ticular,
 values may hold in differing belief states.</p>
 
 <p class="bodytext">For
-types that are ranges, new values are combined by intersection with each ex­isting
+types that are ranges, new values are combined by intersection with each ex&shy;isting
 value: if two values are disjoint, they are contradictory. When a slot is read,
 its values (sub-ranges) are combined to yield the value returned.</p>
 
 <p class="bodytext">For
 instance, we may have deduced that a person is of sixteen years of age or above
 and that they are under 65 from the intelligence that they are married and not
-of pensionable age. Their age slot would contain the values <tt class="sexpr">(0 137)</tt>
-(the initial value), <tt class="sexpr">(16 137)</tt>, and <tt class="sexpr">(0 64)</tt>;
-combination of these values yields <tt class="sexpr">(16 64)</tt>.</p>
+of pensionable age. Their age slot would contain the values <code class="sexpr">(0 137)</code>
+(the initial value), <code class="sexpr">(16 137)</code>, and <code class="sexpr">(0 64)</code>;
+combination of these values yields <code class="sexpr">(16 64)</code>.</p>
 
 <p class="bodytext">The
 following functions may be used to interpret programmatically the result of
 value combination:</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">range-max</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -606,11 +622,11 @@ value combination:</p>
 
 <p class="bodytext">Returns the upper bound of a numeric range.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">range-min</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -623,13 +639,13 @@ value combination:</p>
 
 <p class="bodytext">Returns the lower bound of a numeric range.</p>
 
-<h2><a name="section6">Reading and Writing Slots</a></h2>
+<h2><a id="section6">Reading and Writing Slots</a></h2>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="add"><span class="defn">add-slot-value</span></a>
+<td class="methsig"><a id="add"><span class="defn">add-slot-value</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -660,11 +676,11 @@ which is also responsible for the processing of keyword arguments.</p>
 
 <p class="bodytext">Returns the node corresponding to <span class="argname">new-value</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="adduc"><span class="defn">add-slot-value-using-class</span></a>
+<td class="methsig"><a id="adduc"><span class="defn">add-slot-value-using-class</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -682,7 +698,7 @@ class="arglist">&amp;key</span> slot-name no-check no-count negated
 </tr>
 </table>
 
-<p class="bodytext">Implements the behavior of
+<p class="bodytext">Implements the behaviour of
 <span class="defn"><a href="#add">add-slot-value</a></span>.
 <span class="argname">class</span> is the class of <span class="argname">object</span>.
 <span class="argname">slot</span> is a slot definition object;
@@ -691,22 +707,22 @@ the <span class="argname">slot-name</span> keyword argument defaults to its name
 <p class="bodytext">No checking is done for gross type violations;
 however, the function <span class="defn"><a href="#sat">slot-value-typep</a></span> is
 provided for use by client programs. <span class="argname">new-value</span> is combined with each
-existing value in order to detect con­tradictions; if the values are ranges,
+existing value in order to detect con&shy;tradictions; if the values are ranges,
 and one is not a sub-range of the other, their intersection is added to the
 slot. (This behaviour can be inhibited by means of the <span class="argname">no-check</span> keyword
 argument; see also <span class="defn"><a href="#valid">validate-combination</a></span>.)
 The <span class="argname">no-count</span> keyword argument inhibits the automatic updating
-of a slot's count; see <span class="section"><a href="#section7">Cardinality</a></span>.
+of a slot&rsquo;s count; see <span class="section"><a href="#section7">Cardinality</a></span>.
 The <span class="argname">negated</span> keyword
 argument is used to make an explicit assertion that some (non-range) instance does
-not appear in a slot (e.g., that <tt class="sexpr">joe</tt> is not the spouse
-of <tt class="sexpr">amelia</tt>).</p>
+not appear in a slot (e.g., that <code class="sexpr">joe</code> is not the spouse
+of <code class="sexpr">amelia</code>).</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">slot-definition-missing</span>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -729,11 +745,11 @@ class="arglist">&amp;key &amp;allow-other-keys</span>
 if the slot definition corresponding to <span class="argname">slot-name</span> is
 missing from <span class="argname">class</span>. The default method signals an error.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="addc"><span class="defn">add-contradiction</span></a>
+<td class="methsig"><a id="addc"><span class="defn">add-contradiction</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -747,11 +763,11 @@ missing from <span class="argname">class</span>. The default method signals an e
 <p class="bodytext">Records a contradiction;
 used by <span class="defn"><a href="#adduc">add-slot-value-using-class</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="valid"><span class="defn">validate-combination</span></a>
+<td class="methsig"><a id="valid"><span class="defn">validate-combination</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -774,11 +790,11 @@ both time-consuming and unnecessary; an application-specific method may be suppl
 indicate such cases by returning <span class="defn">nil</span>. The system-supplied method
 returns non-<span class="defn">nil</span> constantly.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="sat"><span class="defn">slot-value-typep</span></a>
+<td class="methsig"><a id="sat"><span class="defn">slot-value-typep</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -794,18 +810,18 @@ if object satisfies type, where <span class="argname">object</span> is an instan
 symbol, number or range and <span class="argname">type</span> a class, e.g.,</p>
 
 <pre>
- (slot-value-typep 'true 'true-or-false) =&gt; t
- (slot-value-typep '(0 100) 'numeric-range) =&gt; t
+ (slot-value-typep 'true 'true-or-false) &rArr; t
+ (slot-value-typep '(0 100) 'numeric-range) &rArr; t
 </pre>
 
 <p class="bodytext">Automatically-generated reader methods may be specified in
 a <span class="defn">defclass</span> form.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">slot-value-reduce</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -831,11 +847,11 @@ href="#uniq">uniquify-environment</a></span>. If <span class="argname">environme
 are combined; if omitted, it defaults to <span
 class="defn"><a href="#empt">*empty-environment*</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">contradictory-value</span>
 </td>
-<td class="methsig1" align="right">Constant
+<td class="methsig1">Constant
 </td>
 </tr>
 </table>
@@ -843,11 +859,11 @@ class="defn"><a href="#empt">*empty-environment*</a></span>.</p>
 <p class="bodytext">The
 distinguished value returned when slot values cannot be combined.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">contradictory-value-p</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -860,11 +876,11 @@ distinguished value returned when slot values cannot be combined.</p>
 
 <p class="bodytext">Predicate that tests for this value.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">slot-values</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -878,11 +894,11 @@ distinguished value returned when slot values cannot be combined.</p>
 <p class="bodytext">Returns
 the ATMS nodes in a slot that hold in an environment.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">remove-slot-value</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -902,16 +918,16 @@ class="arglist">&amp;key</span> negated recursive
 
 <p class="bodytext">Removes a value from a slot, and, optionally, all data
 justified solely by it (the default behaviour). If the
-corresponding node does not hold in the environment of no assump­tions, signals
+corresponding node does not hold in the environment of no assump&shy;tions, signals
 an error: one cannot remove an assumed datum except by explicitly removing the
-as­sumption, upon which all internal ATMS data structures that mention it are
+as&shy;sumption, upon which all internal ATMS data structures that mention it are
 removed. See <span class="defn"><a href="#remn">remove-node</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">remove-node :before</span>
 </td>
-<td class="methsig1" align="right">Method
+<td class="methsig1">Method
 </td>
 </tr>
 <tr>
@@ -932,11 +948,11 @@ class="arglist">&amp;optional</span> recursive
 
 <p class="bodytext">Removes node from its containing slot.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="remn"><span class="defn">remove-node</span></a>
+<td class="methsig"><a id="remn"><span class="defn">remove-node</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -958,11 +974,11 @@ class="arglist">&amp;optional</span> recursive
 <p class="bodytext">Removes
 node, and, optionally, all data justified solely by it (the default behaviour).</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">remove-node :after</span>
 </td>
-<td class="methsig1" align="right">Method
+<td class="methsig1">Method
 </td>
 </tr>
 <tr>
@@ -985,11 +1001,11 @@ class="arglist">&amp;optional</span> recursive
 that assumption may be garbage-collected: the application will not use it
 further. Calls <span class="defn"><a href="#disc">discard-assumption</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="feta"><span class="defn">fetch-assumption</span></a>
+<td class="methsig"><a id="feta"><span class="defn">fetch-assumption</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1016,11 +1032,11 @@ class="arglist">&amp;optional</span> negated
 
 <p class="bodytext">Returns the assumption corresponding to an assumed datum.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">fetch-node</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1047,11 +1063,11 @@ class="arglist">&amp;optional</span> negated
 
 <p class="bodytext">Returns the slot-value node corresponding to a datum.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">elements</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1065,14 +1081,14 @@ class="arglist">standard-slot-value)</span>
 
 <p class="bodytext">Returns a list of the value(s) denoted by a slot-value node.</p>
 
-<h2><a name="section7">Cardinality</a></h2>
+<h2><a id="section7">Cardinality</a></h2>
 
 <p class="bodytext">Where a
-slot holds (non-range) instances, it is possible to associate with it an ad­ditional
-slot that records the number of instances in that slot, being updated auto­matically
+slot holds (non-range) instances, it is possible to associate with it an ad&shy;ditional
+slot that records the number of instances in that slot, being updated auto&shy;matically
 each time a new instance is added. The additional slot is specified in the
 normal way (there must be a <span class="defn">:type</span> slot option that names a
-sub-range of <span class="defn">nu­meric-range</span>);
+sub-range of <span class="defn">nu&shy;meric-range</span>);
 the association is made by giving the name of the additional slot as the value
 of the <span class="defn">:count</span> option of the slot specifier of the original slot.</p>
 
@@ -1080,7 +1096,7 @@ of the <span class="defn">:count</span> option of the slot specifier of the orig
 <span class="defn">zero-or-more</span>, <span class="defn">exactly-one</span> and <span
 class="defn">one-or-more</span>.</p>
 
-<h2><a name="section7a">Composite Objects</a></h2>
+<h2><a id="section7a">Composite Objects</a></h2>
 
 <p class="bodytext">Instances of the class <span class="defn">composite-object</span>
 have a <span class="defn">parts</span> slot referring to
@@ -1091,47 +1107,47 @@ either at instance creation time or subsequently.</p>
 <p class="bodytext">The class has two subclasses: <span class="defn">compound-object</span>
 and <span class="defn">assembly</span>.</p>
 
-<h3><a name="section7a.1">Compound Objects</a></h3>
+<h3><a id="section7a.1">Compound Objects</a></h3>
 
 <p class="bodytext">The <span class="defn">compound-object</span> subclass captures
 the distinction between necessary and contingent membership of a class. For instance,
-a <tt class="sexpr">person</tt> may also be a <tt class="sexpr">catholic</tt> or a
-<tt class="sexpr">police-officer</tt>; these are simpler ideas out of which our
+a <code class="sexpr">person</code> may also be a <code class="sexpr">catholic</code> or a
+<code class="sexpr">police-officer</code>; these are simpler ideas out of which our
 idea of a person as a whole is formed. This distinction is a useful organizing principle.</p>
 
 <p class="bodytext">Were the subordinate classes to be defined as subclasses of
-<tt class="sexpr">person</tt>, some means of stipulating the admissible compound classes
-(e.g., <tt class="sexpr">catholic-police-officer</tt> but not <tt
-class="sexpr">catholic-buddhist</tt>), either by enumerating them or some other mechanism,
+<code class="sexpr">person</code>, some means of stipulating the admissible compound classes
+(e.g., <code class="sexpr">catholic-police-officer</code> but not <code
+class="sexpr">catholic-buddhist</code>), either by enumerating them or some other mechanism,
 would be required. Moreover, new parts could not be added dynamically.</p>
 
-<p class="bodytext">A compound object's parts' slots may be read or stored into as if they
+<p class="bodytext">A compound object&rsquo;s parts&rsquo; slots may be read or stored into as if they
 were slots of the object itself. However, within rules the parts must be
 referred to explicitly.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">:part</span>
 </td>
-<td class="methsig1" align="right">Initialization Argument
+<td class="methsig1">Initialization Argument
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Used to supply a part to a compound object at creation time.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">:parts</span>
 </td>
-<td class="methsig1" align="right">Initialization Argument
+<td class="methsig1">Initialization Argument
 </td>
 </tr>
 </table>
 
 <p class="bodytext">Used to supply a list of parts to a compound object at creation time.</p>
 
-<h3><a name="section7a.2">Assemblies</a></h3>
+<h3><a id="section7a.2">Assemblies</a></h3>
 
 <p class="bodytext">An assembly is a group of objects that are created together.</p>
 
@@ -1139,7 +1155,7 @@ referred to explicitly.</p>
 defined as of type <span class="defn">component</span>, and for which no value is specified
 in the initialization argument list, are filled automatically. The number of
 component instances that are created is determined by the lower bound of
-of the slot's count (see <span class="section"><a href="#section7">Cardinality</a></span>).
+of the slot&rsquo;s count (see <span class="section"><a href="#section7">Cardinality</a></span>).
 If it has no count, one instance is created.</p>
 
 <p class="bodytext">Each component, created or supplied, is added to the <span
@@ -1149,7 +1165,7 @@ class="defn">parts</span> slot of the assembly.</p>
 <span class="defn">initialize-instance</span> methods may be written to detect
 circularities or to create shared parts.</p>
 
-<h2><a name="section8">Class-Changing</a></h2>
+<h2><a id="section8">Class-Changing</a></h2>
 
 <p class="bodytext">Class-changing,
 in which the structure of an instance is modified to reflect a new class, may
@@ -1158,16 +1174,16 @@ in the inheritance hierarchy.</p>
 
 <p class="bodytext">However, a value stored in a slot of an instance might not trigger an
 inference as expected after its class is changed. For example, if a value is stored in the
-<tt class="sexpr">children</tt> slot of a <tt class="sexpr">parent</tt> instance, and then
-that instance is changed to a <tt class="sexpr">grandparent</tt>, a rule that refers to the
-<tt class="sexpr">children</tt> of a <tt class="sexpr">grandparent</tt> will not succeed.
+<code class="sexpr">children</code> slot of a <code class="sexpr">parent</code> instance, and then
+that instance is changed to a <code class="sexpr">grandparent</code>, a rule that refers to the
+<code class="sexpr">children</code> of a <code class="sexpr">grandparent</code> will not succeed.
 To enable such inferences, use:</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="remn"><span class="defn">notice-slot-values</span></a>
+<td class="methsig"><span class="defn">notice-slot-values</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1191,11 +1207,11 @@ class="argname">instance</span>. Ensures that values stored in its slots that sa
 class="argname">predicate</span> (by default, all
 those that hold in a non-empty environment) have been noticed by the reasoning procedure.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="clas"><span class="defn">classify</span></a>
+<td class="methsig"><a id="clas"><span class="defn">classify</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1224,11 +1240,11 @@ class="arglist">extended-class)</span>
 class(es) most subordinate to <span class="argname">class</span>, under which <span
 class="argname">instance</span> falls (may fall). Returns a list of classes.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">map-slots</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1255,22 +1271,22 @@ whether the most or least subordinate of those slot definitions with the same
 name be used; a type specifier in a subordinate slot definition should always
 be a subtype of one in a superior definition.</p>
 
-<h2><a name="section9">Rule Language</a></h2>
+<h2><a id="section9">Rule Language</a></h2>
 
 <p class="bodytext">The
-reasoning procedure takes as inputs values stored into slots and a corpus of im­plicitly
+reasoning procedure takes as inputs values stored into slots and a corpus of im&shy;plicitly
 universally quantified logical expressions (rules and constraints, known
 collectively as well-formed formulae) written by the user, and produces unit
 steps called consumers, each of which represents an individual inference. A
 separate scheduling procedure (see <span class="defn"><a href="#sche">schedule</a></span>)
-takes each consumer and constructs a new da­tum (slot value), along with a
-justification, which records the derivation of that da­tum.</p>
+takes each consumer and constructs a new da&shy;tum (slot value), along with a
+justification, which records the derivation of that da&shy;tum.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defc"><span class="defn">defconstraint</span></a>
+<td class="methsig"><a id="defc"><span class="defn">defconstraint</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -1286,11 +1302,11 @@ class="arglist">&amp;rest</span> constraint-body
 constraint is an arbitrary logical expression, from which all possible
 inferences are derived.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="defru"><span class="defn">defrule</span></a>
+<td class="methsig"><a id="defru"><span class="defn">defrule</span></a>
 </td>
-<td class="methsig1" align="right">Macro
+<td class="methsig1">Macro
 </td>
 </tr>
 <tr>
@@ -1307,240 +1323,240 @@ has a distinguished head, the truth of which the rule acts to determine.</p>
 
 <div style="border:solid windowtext .75pt">
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>qualifier</i>::=</td><td><tt>:assume</tt></td>
+<td><var>qualifier</var>::=</td><td><code>:assume</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>declarations</i>::=</td>
-<td><tt>(</tt>{<tt>(</tt><i>variable-name class-name</i><tt>)</tt>}+<tt>)</tt></td>
+<td><var>declarations</var>::=</td>
+<td><code>(</code>{<code>(</code><var>variable-name class-name</var><code>)</code>}+<code>)</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>constraint-body</i>::=</td><td>[<i>documentation-string</i>] <i>expression</i></td>
+<td><var>constraint-body</var>::=</td><td>[<var>documentation-string</var>] <var>expression</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>rule-body</i>::=</td>
-<td><i>if-body</i> | <i>iff-body</i></td>
+<td><var>rule-body</var>::=</td>
+<td><var>if-body</var> | <var>iff-body</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>if-body</i>::=</td>
-<td>[<i>documentation-string</i>] [<i>disjunction</i> <tt>-&gt;</tt>] <i>compound-head</i></td>
+<td><var>if-body</var>::=</td>
+<td>[<var>documentation-string</var>] [<var>disjunction</var> <code>-&gt;</code>] <var>compound-head</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>iff-body</i>::=</td>
-<td>[<i>documentation-string</i>] <i>disjunction</i> <tt>&lt;-&gt;</tt> <i>head</i></td>
+<td><var>iff-body</var>::=</td>
+<td>[<var>documentation-string</var>] <var>disjunction</var> <code>&lt;-&gt;</code> <var>head</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>compound-head</i>::=</td>
-<td><i>head</i> [<tt>and</tt> <i>compound-head</i>]</td>
+<td><var>compound-head</var>::=</td>
+<td><var>head</var> [<code>and</code> <var>compound-head</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>head</i>::=</td>
-<td>[<tt>not</tt>] <i>proposition</i></td>
+<td><var>head</var>::=</td>
+<td>[<code>not</code>] <var>proposition</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>expression</i>::=</td>
-<td><i>condition</i> [<tt>-&gt;</tt> <i>expression</i>]</td>
+<td><var>expression</var>::=</td>
+<td><var>condition</var> [<code>-&gt;</code> <var>expression</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>condition</i>::=</td>
-<td><i>disjunction</i> [<tt>&lt;-&gt;</tt> <i>condition</i>]</td>
+<td><var>condition</var>::=</td>
+<td><var>disjunction</var> [<code>&lt;-&gt;</code> <var>condition</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>disjunction</i>::=</td>
-<td><i>conjunction</i> [<tt>or</tt> <i>disjunction</i>]</td>
+<td><var>disjunction</var>::=</td>
+<td><var>conjunction</var> [<code>or</code> <var>disjunction</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>conjunction</i>::=</td>
-<td><i>primary</i> [<tt>and</tt> <i>conjunction</i>]</td>
+<td><var>conjunction</var>::=</td>
+<td><var>primary</var> [<code>and</code> <var>conjunction</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>primary</i>::=</td>
-<td><i>proposition</i> | <tt>not</tt> <i>primary</i> | <tt>(</tt><i>expression</i><tt>)</tt></td>
+<td><var>primary</var>::=</td>
+<td><var>proposition</var> | <code>not</code> <var>primary</var> | <code>(</code><var>expression</var><code>)</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>proposition</i>::=</td><td><i>lisp-proposition</i> |</td>
+<td><var>proposition</var>::=</td><td><var>lisp-proposition</var> |</td>
 </tr>
 <tr>
-<td></td><td><i>literal-proposition</i> |</td>
+<td></td><td><var>literal-proposition</var> |</td>
 </tr>
 <tr>
-<td></td><td><i>relational-proposition</i> |</td>
+<td></td><td><var>relational-proposition</var> |</td>
 </tr>
 <tr>
-<td></td><td><i>numeric-or-arithmetic-proposition</i></td>
-</tr>
-</table>
-
-<table border="0">
-<tr>
-<td><i>lisp-proposition</i>::=</td>
-<td><tt>lisp</tt> <tt>(</tt><i>function-name</i> {<i>arg</i>}+<tt>)</tt></td>
+<td></td><td><var>numeric-or-arithmetic-proposition</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>arg</i>::=</td><td><tt>(</tt><i>variable-name class-name</i><tt>)</tt> |</td>
-</tr>
-<tr>
-<td></td><td><i>attribute-reference</i> |</td>
-</tr>
-<tr>
-<td></td><td><i>number</i> | <i>string</i></td>
+<td><var>lisp-proposition</var>::=</td>
+<td><code>lisp</code> <code>(</code><var>function-name</var> {<var>arg</var>}+<code>)</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>attribute-reference</i>::=</td><td><i>variable-name slot-name</i></td>
+<td><var>arg</var>::=</td><td><code>(</code><var>variable-name class-name</var><code>)</code> |</td>
+</tr>
+<tr>
+<td></td><td><var>attribute-reference</var> |</td>
+</tr>
+<tr>
+<td></td><td><var>number</var> | <var>string</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>literal-proposition</i>::=</td><td><i>attribute-reference</i> {</td>
-</tr>
-<tr>
-<td></td><td><tt>is</tt> <i>symbol</i> |</td>
-</tr>
-<tr>
-<td></td><td><tt>is in</tt> <tt>(</tt>{<i>symbol</i>}+<tt>)</tt> |</td>
-</tr>
-<tr>
-<td></td><td><tt>is in</tt> <i>range-class-name</i> |</td>
-</tr>
-<tr>
-<td></td><td><tt>is</tt> [<tt>in</tt>] <i>attribute-reference</i>}</td>
+<td><var>attribute-reference</var>::=</td><td><var>variable-name slot-name</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>relational-proposition</i>::=</td>
-<td><i>attribute-reference</i> [<tt>is</tt> | <tt>includes</tt>] <i>variable-name</i></td>
+<td><var>literal-proposition</var>::=</td><td><var>attribute-reference</var> {</td>
+</tr>
+<tr>
+<td></td><td><code>is</code> <var>symbol</var> |</td>
+</tr>
+<tr>
+<td></td><td><code>is in</code> <code>(</code>{<var>symbol</var>}+<code>)</code> |</td>
+</tr>
+<tr>
+<td></td><td><code>is in</code> <var>range-class-name</var> |</td>
+</tr>
+<tr>
+<td></td><td><code>is</code> [<code>in</code>] <var>attribute-reference</var>}</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>numeric-or-arithmetic-proposition</i>::=</td><td><i>attribute-reference</i> {</td>
-</tr>
-<tr>
-<td></td><td><tt>is in</tt> <i>numeric-range</i> |</td>
-</tr>
-<tr>
-<td></td><td><tt>is in</tt> <i>range-class-name</i> |</td>
-</tr>
-<tr>
-<td></td><td><tt>is</tt> <i>number</i> |</td>
-</tr>
-<tr>
-<td></td><td><i>relation arithmetic-rhs</i>}</td>
+<td><var>relational-proposition</var>::=</td>
+<td><var>attribute-reference</var> [<code>is</code> | <code>includes</code>] <var>variable-name</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>numeric-range</i>::=</td><td><tt>(</tt><i>number number</i><tt>)</tt></td>
+<td><var>numeric-or-arithmetic-proposition</var>::=</td><td><var>attribute-reference</var> {</td>
+</tr>
+<tr>
+<td></td><td><code>is in</code> <var>numeric-range</var> |</td>
+</tr>
+<tr>
+<td></td><td><code>is in</code> <var>range-class-name</var> |</td>
+</tr>
+<tr>
+<td></td><td><code>is</code> <var>number</var> |</td>
+</tr>
+<tr>
+<td></td><td><var>relation arithmetic-rhs</var>}</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>relation</i>::=</td>
-<td><tt>=</tt> | <tt>&gt;</tt> | <tt>&lt;</tt> | <tt>&gt;=</tt> | <tt>&lt;=</tt> | <tt>/=</tt></td>
+<td><var>numeric-range</var>::=</td><td><code>(</code><var>number number</var><code>)</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>arithmetic-rhs</i>::=</td><td><i>arithmetic-expr</i> |</td>
-</tr>
-<tr>
-<td></td><td>{ <tt>aggregate-min</tt> | <tt>aggregate-max</tt> | <tt>aggregate-sum</tt> }</td>
-</tr>
-<tr>
-<td></td><td><tt>(</tt><i>relational-attribute-reference</i> <i>numeric-attribute-reference</i><tt>)</tt> |</td>
-</tr>
-<tr>
-<td></td><td>{ <tt>min</tt> | <tt>max</tt> } <tt>(</tt>{<i>attribute-reference</i> | <i>number</i> }+<tt>)</tt></td>
+<td><var>relation</var>::=</td>
+<td><code>=</code> | <code>&gt;</code> | <code>&lt;</code> | <code>&gt;=</code> | <code>&lt;=</code> | <code>/=</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>arithmetic-expr</i>::=</td><td><i>mult-term</i> [<i>plus-op arithmetic-expr</i>]</td>
+<td><var>arithmetic-rhs</var>::=</td><td><var>arithmetic-expr</var> |</td>
+</tr>
+<tr>
+<td></td><td>{ <code>aggregate-min</code> | <code>aggregate-max</code> | <code>aggregate-sum</code> }</td>
+</tr>
+<tr>
+<td></td><td><code>(</code><var>relational-attribute-reference</var> <var>numeric-attribute-reference</var><code>)</code> |</td>
+</tr>
+<tr>
+<td></td><td>{ <code>min</code> | <code>max</code> } <code>(</code>{<var>attribute-reference</var> | <var>number</var> }+<code>)</code></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>mult-term</i>::=</td><td><i>factor</i> [<i>mult-op mult-term</i>]</td>
+<td><var>arithmetic-expr</var>::=</td><td><var>mult-term</var> [<var>plus-op arithmetic-expr</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>factor</i>::=</td>
-<td><tt>(</tt><i>arithmetic-expr</i><tt>)</tt> | <i>number</i> | <i>attribute-reference</i> | <tt>-</tt> <i>factor</i></td>
+<td><var>mult-term</var>::=</td><td><var>factor</var> [<var>mult-op mult-term</var>]</td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>plus-op</i>::=</td><td><tt>+</tt> | <tt>-</tt></td>
+<td><var>factor</var>::=</td>
+<td><code>(</code><var>arithmetic-expr</var><code>)</code> | <var>number</var> | <var>attribute-reference</var> | <code>-</code> <var>factor</var></td>
 </tr>
 </table>
 
-<table border="0">
+<table class="layout2" role="presentation">
 <tr>
-<td><i>mult-op</i>::=</td><td><tt>*</tt> | <tt>/</tt></td>
+<td><var>plus-op</var>::=</td><td><code>+</code> | <code>-</code></td>
+</tr>
+</table>
+
+<table class="layout2" role="presentation">
+<tr>
+<td><var>mult-op</var>::=</td><td><code>*</code> | <code>/</code></td>
 </tr>
 </table>
 
 </div>
 
-<h3><a name="section9.1">Note on Lisp Propositions</a></h3>
+<h3><a id="section9.1">Note on Lisp Propositions</a></h3>
 
 <p class="bodytext">The
 function is applied to the arguments specified; variables and attribute
@@ -1551,21 +1567,21 @@ informant, to use if it installs a justification (see <span
 class="defn"><a href="#add">add-slot-value</a></span>).
 Not intended for use in constraints.</p>
 
-<h3><a name="section9.2">Note on the Use of Relational Propositions in
+<h3><a id="section9.2">Note on the Use of Relational Propositions in
 Rules</a></h3>
 
 <p class="bodytext">If the last <span class="defn"><a href="#defru">defrule</a></span>
-example below, with a relational proposition in its body and a <tt
-class="sexpr">&lt;-&gt;</tt> connective, were written straightforwardly, the negation
+example below, with a relational proposition in its body and a <code
+class="sexpr">&lt;-&gt;</code> connective, were written straightforwardly, the negation
 of the head of the rule would never be inferred. (This is because the logical expressions
 into which the compiler translates the rule do not exactly reflect the intention of the rule
 writer.) The formulation used enables all the intended inferences, and is safe
 provided the negation of the relational proposition in the body of the rule is
 not asserted.</p>
 
-<h3><a name="section9.3">Example Well-Formed Formulae</a></h3>
+<h3><a id="section9.3">Example Well-Formed Formulae</a></h3>
 
-<pre>
+<pre><code>
 (defconstraint pensionable ((p person)) &quot;Pensionable age rule.&quot;
   p age &gt; 64 or p sex is female and p age &gt; 59
   &lt;-&gt;
@@ -1585,15 +1601,15 @@ not asserted.</p>
   -&gt; p combined-age-of-children = aggregate-sum (p children c age))
 
 (defrule qualifying-accounts ((cb credit-balance)
-                              (sa share-account))
-  cb accounts-held-in includes sa -&gt;           ; See note above.
-    cb accounts-held-in includes sa and
-    sa account-name is in qualifying-share-account-names
+                              (sa share-account))
+  cb accounts-held-in includes sa -&gt;           &semi; See note above.
+    cb accounts-held-in includes sa and
+    sa account-name is in qualifying-share-account-names
   &lt;-&gt;
   cb qualifying-accounts-held-in includes sa)
-</pre>
+</code></pre>
 
-<h2><a name="section9a">Automatically-Generated Rules</a></h2>
+<h2><a id="section9a">Automatically-Generated Rules</a></h2>
 
 <p class="bodytext"><span class="defn">defclass</span> slot specifiers take two additional
 options, <span class="defn">:composition</span> and <span class="defn">:inverse</span>, which
@@ -1601,16 +1617,16 @@ define a slot in terms of one or more others and sanction the derivation of valu
 slots are stored into. The latter option takes a single value, a (non-range-valued) slot name.
 The former may be one of <span class="defn">:symmetric</span> or <span
 class="defn">:transitive</span>, or alternatively a list of one or more slot names, such as
-<tt class="sexpr">(parent brother)</tt> for determining the value of an <tt
-class="sexpr">uncle</tt> slot.</p>
+<code class="sexpr">(parent brother)</code> for determining the value of an <code
+class="sexpr">uncle</code> slot.</p>
 
-<h2><a name="section10">Rule Objects</a></h2>
+<h2><a id="section10">Rule Objects</a></h2>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rule-compile</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1627,11 +1643,11 @@ a well-formed formula; invoked automatically when a <span
 class="defn"><a href="#defc">defconstraint</a></span>
 or <span class="defn"><a href="#defru">defrule</a></span> form is evaluated.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">uncompile</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1646,11 +1662,11 @@ class="arglist">well-formed-formula)</span>
 <p class="bodytext">Undoes
 the effects of a compilation: the wff no longer participates in reasoning.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*trace-rule-failure*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -1659,11 +1675,11 @@ the effects of a compilation: the wff no longer participates in reasoning.</p>
 the printing of information about the point of failure during the evaluation of
 rules and constraints.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">*rule-trace-output*</span>
 </td>
-<td class="methsig1" align="right">Variable
+<td class="methsig1">Variable
 </td>
 </tr>
 </table>
@@ -1671,11 +1687,11 @@ rules and constraints.</p>
 <p class="bodytext">The
 stream to which trace information is printed; initially <span class="defn">*trace-output*</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rules-using</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1689,11 +1705,11 @@ stream to which trace information is printed; initially <span class="defn">*trac
 <p class="bodytext">Returns
 the rules and constraints that notice data stored in the given slot.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">rules-affecting</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1708,11 +1724,11 @@ the rules and constraints that notice data stored in the given slot.</p>
 the rules that can affect the contents of the given slot. (A constraint,
 being non-directional, can affect all the slots it notices.)</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="slotu"><span class="defn">slots-used</span></a>
+<td class="methsig"><a id="slotu"><span class="defn">slots-used</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1725,13 +1741,13 @@ class="arglist">well-formed-formula)</span>
 </table>
 
 <p class="bodytext">Returns
-a list of attribute references denoting those slots noticed by a rule or con­straint.</p>
+a list of attribute references denoting those slots noticed by a rule or con&shy;straint.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="slota"><span class="defn">slot-affected</span></a>
+<td class="methsig"><a id="slota"><span class="defn">slot-affected</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1750,13 +1766,13 @@ can affect a slot if it notices it.)</p>
 <p class="bodytext">The
 result of <span class="defn"><a href="#slota">slot-affected</a></span> and
 <span class="defn"><a href="#slotu">slots-used</a></span> can be examined by means
-of the fol­lowing accessor functions:</p>
+of the fol&shy;lowing accessor functions:</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">attribute-reference-class</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1769,11 +1785,11 @@ of the fol­lowing accessor functions:</p>
 
 <p class="bodytext">Returns the class-name component of an attribute reference.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">attribute-name</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1786,26 +1802,26 @@ of the fol­lowing accessor functions:</p>
 
 <p class="bodytext">Returns the slot-name component of an attribute reference.</p>
 
-<h2><a name="section11">Reasoning With Assumed Data</a></h2>
+<h2><a id="section11">Reasoning With Assumed Data</a></h2>
 
 <p class="bodytext">Problem
 solving with the ATMS requires the making of appropriate assumptions, followed
-by a search of the space of environments (i.e., combinations of assump­tions),
+by a search of the space of environments (i.e., combinations of assump&shy;tions),
 smallest first, for a solution.</p>
 
 <p class="bodytext">The former task is accomplished using <span
 class="defn"><a href="#assv">assume-slot-value</a></span>,
 or, if the datum to be assumed is an arbitrary logical expression (this will appear in an
-inferred datum’s justification just like the other data that trigger an inference), by
+inferred datum&rsquo;s justification just like the other data that trigger an inference), by
 using the <span class="defn">:assume</span> qualifier accepted by the <span
 class="defn"><a href="#defc">defconstraint</a></span> and <span
 class="defn"><a href="#defru">defrule</a></span> macros.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="assv"><span class="defn">assume-slot-value</span></a>
+<td class="methsig"><a id="assv"><span class="defn">assume-slot-value</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1830,11 +1846,11 @@ If <span class="argname">assumption</span>
 is omitted or is <span class="defn">nil</span>, manufactures one with <span
 class="defn"><a href="#makea">make-assumption</a></span>. Returns assumption.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="assu"><span class="defn">assume-slot-values</span></a>
+<td class="methsig"><a id="assu"><span class="defn">assume-slot-values</span></a>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
@@ -1860,11 +1876,11 @@ supplied, it is used exclusively; if a value has previously been assumed (see
 <span class="defn"><a href="#feta">fetch-assumption</a></span>), that assumption
 is used; otherwise assumptions are created. Returns a list of assumptions.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="back"><span class="defn">backtrack</span></a>
+<td class="methsig"><a id="back"><span class="defn">backtrack</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1894,17 +1910,17 @@ class="arglist">atms)</span>
 recursive backtracking scheme appropriate where a solution must select exactly
 one choice from each of a number of sets, and where the solution does not
 depend on the order in which choices are made. See: de Kleer and Williams,
-‘Back to Backtracking: Controlling the ATMS’, AAAI-86.</p>
+&lsquo;Back to Backtracking: Controlling the ATMS&rsquo;, AAAI-86.</p>
 
 <p class="bodytext">For optimal performance, the order in which the assumption
 sets are created and the order in which they appear in <span
 class="argname">control-disjunctions</span> should be the same.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><span class="defn">atms:oneof-disjunction</span></a>
+<td class="methsig"><span class="defn">atms:oneof-disjunction</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1929,11 +1945,11 @@ control disjunctions. If <span class="argname">no-check</span> is non-<span
 class="defn">nil</span> (the default), no checking for previously-recorded conflicts
 is performed.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="ord"><span class="defn">order-control-disjunction</span></a>
+<td class="methsig"><a id="ord"><span class="defn">order-control-disjunction</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1951,11 +1967,11 @@ class="argname">e</span> (the partial solution).
 <span class="argname">object</span> is the instance of which the assumed datum of the first
 assumption is a slot value.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="added"><span class="defn">added-assumption</span></a>
+<td class="methsig"><a id="added"><span class="defn">added-assumption</span></a>
 </td>
-<td class="methsig1" align="right">Generic Function
+<td class="methsig1">Generic Function
 </td>
 </tr>
 <tr>
@@ -1973,11 +1989,11 @@ a consistent environment results). <span class="argname">object</span> is as abo
 application-specific method can be supplied to detect contradictions
 explicitly. See <span class="defn"><a href="#addc">add-contradiction</a></span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="sche"><span class="defn">schedule</span></a>
+<td class="methsig"><a id="sche"><span class="defn">schedule</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -1997,16 +2013,16 @@ class="arglist">environment)</span>
 </table>
 
 <p class="bodytext">Runs all consumers in all subsets of an environment. For the
-environment {<i>A, B, C</i>}, consumers are executed in the order: {<i>A</i>},
-{<i>B</i>}, {<i>A, B</i>}, {<i>C</i>}, {<i>A, C</i>}, {<i>B, C</i>}, {<i>A,
-B, C</i>}. Returns a list of consistent subsets. See the
+environment {<var>A, B, C</var>}, consumers are executed in the order: {<var>A</var>},
+{<var>B</var>}, {<var>A, B</var>}, {<var>C</var>}, {<var>A, C</var>}, {<var>B, C</var>}, {<var>A,
+B, C</var>}. Returns a list of consistent subsets. See the
 <a href="reasoner.html#back">paper</a> by de Kleer and Williams.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">nschedule</span>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -2029,11 +2045,11 @@ class="arglist">environment)</span>
 href="#sche">schedule</a></span>. Environments are executed in size order and those
 of the same size in an arbitrary order.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><a name="solu"><span class="defn">solutions</span></a>
+<td class="methsig"><a id="solu"><span class="defn">solutions</span></a>
 </td>
-<td class="methsig1" align="right">Primary Method
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
@@ -2073,11 +2089,11 @@ and those that are consistent and maximal (i.e., with respect to <span
 class="argname">choices</span>) returned. No environment objects will
 be created if <span class="argname">dont-create</span> is non-<span class="defn">nil</span>.</p>
 
-<table border="0" width="100%">
+<table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><span class="defn">describe-data</span>
 </td>
-<td class="methsig1" align="right">Function
+<td class="methsig1">Function
 </td>
 </tr>
 <tr>
