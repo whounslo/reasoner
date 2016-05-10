@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007-2009, 2011 by William Hounslow
+;;; Copyright (C) 2007-2009, 2011, 2016 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -9,6 +9,8 @@
 #-mop
   (:import-from :reasoner #:defclass*)
   (:shadow #:defclass)
+#+clisp
+  (:shadowing-import-from :reasoner #:subtypep)
   (:export #:*default-metaclass* #:yes-or-no #:yes #:no))
 
 (in-package :rs-ext)
@@ -42,4 +44,4 @@
 (defpackage :reasoner-user
   (:nicknames :rs-user)
   (:use :reasoner-ext :reasoner :cl)
-  (:shadowing-import-from :reasoner-ext #:defclass))
+  (:shadowing-import-from :reasoner-ext #:defclass #+clisp #:subtypep))

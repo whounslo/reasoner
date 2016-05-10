@@ -15,10 +15,12 @@
 #+(and (not closer-mop) cmu)
   (:use :clos-mop)
 #+(and (not closer-mop) sbcl)
-  (:use :sb-pcl)
+  (:use :sb-mop)
   (:shadow #:variable)
-#+(or abcl clisp)
+#+(or abcl clisp sbcl)
   (:shadow #:ensure-class #:ensure-class-using-class)
+#+clisp
+  (:shadow #:subtypep)
 #+ecl
   (:shadow #:class-slots)
 #+lispworks
@@ -28,12 +30,6 @@
 
 (in-package reasoner)
 (eval-when (:execute :compile-toplevel :load-toplevel)
-#+allegro
-  (progn
-    (push (string :reasoner)
-          (excl:package-implementation-packages (find-package :cl)))
-    (push (string :reasoner)
-          (excl:package-implementation-packages (find-package :clos))))
 
 (export '(make-assumption uniquify-environment
           in-p truep contradictoryp subsumesp
@@ -64,13 +60,15 @@
           ))
 )
 
-;;; Hide some MOP implementation idiosyncrasies.
+;;; Hide some CLOS implementation idiosyncrasies.
 
 #+(and (not closer-mop) abcl)
 (defconstant ensure-class-using-class-fn #'mop:ensure-class-using-class)
 #+(and (not closer-mop) clisp)
 (defconstant ensure-class-using-class-fn #'clos:ensure-class-using-class)
-#+closer-mop
+#+(and (not closer-mop) sbcl)
+(defconstant ensure-class-using-class-fn #'sb-mop:ensure-class-using-class)
+#+(and closer-mop (or abcl clisp sbcl))
 (defconstant ensure-class-using-class-fn #'c2cl:ensure-class-using-class)
 
 #+(or abcl clisp)
@@ -88,11 +86,43 @@
              initargs)
     (apply ensure-class-using-class-fn class name initargs)))
 
-#+(or abcl clisp)
-(defmacro ensure-class (name &rest initargs)
-  `(ensure-class-using-class (find-class ,name nil)
-                             ,name
-                             ,@initargs))
+#+sbcl
+(defun ensure-class-using-class (class
+                                 name
+                                 &rest initargs
+                                 &key direct-superclasses
+                                 &allow-other-keys)
+  (if class
+      (apply ensure-class-using-class-fn class name initargs)
+    (apply ensure-class-using-class-fn
+           class
+           name
+           :direct-superclasses direct-superclasses
+                                               ; Supply explicitly to inhibit
+                                               ; over-eager defaulting.
+           initargs)))
+
+#+(or abcl clisp sbcl)
+(defun ensure-class (name &rest initargs)
+  (apply #'ensure-class-using-class (find-class name nil)
+                                    name
+                                    initargs))
+
+#+clisp
+(defun subtypep (type-1 type-2 &optional environment)
+  (let (subtype-p valid-p normal)
+    (ignore-errors
+     (multiple-value-setq (subtype-p valid-p)
+       (cl:subtypep type-1 type-2 environment))
+                                               ; Signals an error if a symbol
+                                               ; associated with a class using
+                                               ; setf and find-class is received.
+     (setq normal (not nil)))
+    (if normal
+        (values subtype-p valid-p)
+      (cl:subtypep (or (if (symbolp type-1) (find-class type-1 nil)) type-1)
+                   (or (if (symbolp type-2) (find-class type-2 nil)) type-2)
+                   environment))))
 
 #+ecl
 (defmethod class-slots ((class t))
