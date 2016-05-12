@@ -1,4 +1,4 @@
-;;; Copyright (C) 2012, 2013, 2014 by William Hounslow
+;;; Copyright (C) 2012, 2013, 2014, 2016 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -10,7 +10,7 @@
   (import '(rs::numeric-range-intersection rs::validate-superclass
             rs::direct-slot-definition-class rs::effective-slot-definition-class
             rs::extended-direct-slot-definition rs::extended-effective-slot-definition
-            rs::compute-effective-slot-definition
+            rs::compute-effective-slot-definition rs::default-direct-superclass
             rs::slot-definition-composition rs::slot-definition-inverse
             rs::class-dependents-finalized-p))
   (export '(with-rdf with-ontology serialize-objects *allow-multiple-domains*
@@ -145,57 +145,24 @@
       (setq type-2 (slot-definition-type (cadr direct-slots)))
       (adjust-count-type type-1 type-2))))
 
-(let ((the-class-resource (find-class 'xmlrdfs::resource))
-      (the-class-standard-object (find-class 'standard-object)))
+(let ((the-class-resource (find-class 'xmlrdfs::resource)))
 
 (setf (find-class 'thing) the-class-resource)
 
-(defmethod initialize-instance :around ((class xmlrdfs::class)
-                                        &rest initargs
-                                        &key direct-superclasses
-                                        &allow-other-keys)
-  (apply #'call-next-method
-         class
-         (if direct-superclasses
-             initargs
-           (list* :direct-superclasses
-                  (list the-class-resource)
-                  initargs))))
+(defmethod default-direct-superclass ((class xmlrdfs::class))
+  the-class-resource)
+
+  ) ;end let the-class-resource
 
 (defmethod initialize-instance :after ((class xmlrdfs::class)
                                        &key same-as
                                        &allow-other-keys)
   (when same-as (setf (find-class same-as) class)))
 
-(defmethod reinitialize-instance :around ((class xmlrdfs::class)
-                                          &rest initargs
-                                          &key (direct-superclasses nil supp)
-                                          &allow-other-keys)
-  (flet ((forward-referenced-p (direct-superclasses)
-           (and (singletonp direct-superclasses)
-                (eq (first direct-superclasses) the-class-standard-object))))
-    (with-accessors ((class-direct-superclasses class-direct-superclasses))
-        class
-      (apply #'call-next-method
-             class
-             (if (or (eq class the-class-resource)
-                     direct-superclasses
-                     (and (not supp)
-                          (not (forward-referenced-p class-direct-superclasses))))
-                 initargs
-               (list* :direct-superclasses
-#-clisp               (list the-class-resource)
-#+clisp               (if (forward-referenced-p class-direct-superclasses)
-                          (list the-class-resource)
-                        class-direct-superclasses)
-                      initargs))))))
-
 (defmethod reinitialize-instance :after ((class xmlrdfs::class)
                                          &key same-as
                                          &allow-other-keys)
   (when same-as (setf (find-class same-as) class)))
-
-  ) ;end let the-class-resource
 
 (defun get-id (name)
 

@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007-2014 by William Hounslow
+;;; Copyright (C) 2007-2014, 2016 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -59,6 +59,9 @@
   (not nil))
 )
 
+(defmethod default-direct-superclass ((class extended-class))
+  (find-class 'extended-object))
+
 (defmethod initialize-instance :around ((class extended-class)
                                         &rest initargs
                                         &key direct-superclasses
@@ -68,21 +71,35 @@
          (if direct-superclasses
              initargs
            (list* :direct-superclasses
-                  (list (find-class 'extended-object))
+                  (list (default-direct-superclass class))
                   initargs))))
+
+(let ((the-class-standard-object (find-class 'standard-object)))
 
 (defmethod reinitialize-instance :around ((class extended-class)
                                           &rest initargs
                                           &key (direct-superclasses nil supp)
                                           &allow-other-keys)
-  (apply #'call-next-method
-         class
-         (if (or direct-superclasses
-                 (not supp))
-             initargs
-           (list* :direct-superclasses
-                  (list (find-class 'extended-object))
-                  initargs))))
+  (flet ((forward-referenced-p (direct-superclasses)
+           (and (singletonp direct-superclasses)
+                (eq (first direct-superclasses) the-class-standard-object))))
+    (with-accessors ((class-direct-superclasses class-direct-superclasses))
+        class
+      (apply #'call-next-method
+             class
+             (if (or (eq class (default-direct-superclass class))
+                     direct-superclasses
+                     (and (not supp)
+                          (not (forward-referenced-p class-direct-superclasses))))
+                 initargs
+               (list* :direct-superclasses
+#-clisp               (list (default-direct-superclass class))
+#+clisp               (if (forward-referenced-p class-direct-superclasses)
+                          (list (default-direct-superclass class))
+                        class-direct-superclasses)
+                      initargs))))))
+
+  ) ;end let the-class-standard-object
 
 (defmethod finalize-dependent ((dependent t))
   )
