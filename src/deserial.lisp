@@ -1,4 +1,4 @@
-;;; Copyright (C) 2011-2014 by William Hounslow
+;;; Copyright (C) 2011-2014, 2016 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -168,7 +168,10 @@
 
 (defparameter *xml-id-attribute* :name)
 
+#-sbcl
 (defconstant whitespace '(#\Space #\Tab #\Newline))
+#+sbcl
+(defparameter whitespace '(#\Space #\Tab #\Newline))
 
 ;;; XML parser interface
 
