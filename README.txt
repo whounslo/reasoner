@@ -13,11 +13,11 @@ Status
 ------
 
 It has been tested in Allegro 9.0, clisp 2.48, ECL 13.5.1, LispWorks 6.1.1
-and SBCL 1.1.2 (Win32).
+and SBCL 1.3.5.
 
 It should run unmodified in any Lisp that implements the metaobject
 protocol, and can be used in conjunction with Closer to MOP
-(common-lisp.net/project/closer/).
+(https://common-lisp.net/project/closer/).
 
 The file compat.lisp may enable it to work (possibly with a little additional
 customization) in other Lisps.
@@ -37,7 +37,11 @@ overhead of maintaining a count of these values.
 Bug fixes:
 
 XML Schema deserialization failed in clisp due to defaulting of
-:direct-superclasses argument if class exists.
+:direct-superclasses argument of ensure-class if class exists and in SBCL if
+it doesn't.
+
+Forward-referenced base complexTypes were assigned the wrong place in the
+class hierarchy.
 
 Installation
 ------------
