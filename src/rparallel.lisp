@@ -1,4 +1,4 @@
-;;; Copyright (C) 2013, 2014 by William Hounslow
+;;; Copyright (C) 2013, 2014, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -28,6 +28,7 @@
   )
 
 (defmacro hold-lock (object &body body)
+  (declare (ignorable object))
 #-lparallel
   `(progn ,@body)
 #+lparallel
@@ -39,10 +40,10 @@
   "Packages expression as a memoized procedure for evaluation later on demand."
   `(let (already-run result)
     #'(lambda ()
-        (if already-run
-            result
-          (setq already-run (not nil)
-              result ,exp)))))
+        (unless already-run
+           (setq result ,exp
+               already-run (not nil)))
+        result)))
 
 #-lparallel
 (defgeneric force (object)
@@ -83,6 +84,7 @@
        )))
 
 (defmacro do-deferred-results (result-var &body body)
+  (declare (ignorable result-var body))
 #+lparallel
   (let ((tasks-var (gensym))
         (task-var-1 (gensym))                  ; Dispatchers.
@@ -98,5 +100,6 @@
            ,@body)))))
 
 (defmacro if-in-parallel (form)
+  (declare (ignorable form))
 #+lparallel
   form)
