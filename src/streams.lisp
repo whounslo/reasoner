@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007, 2011, 2014 by William Hounslow
+;;; Copyright (C) 2007, 2011, 2014, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -12,8 +12,8 @@
 (eval-when (:execute :compile-toplevel :load-toplevel)
   (export
    '(accumulate-delayed cons-stream delay empty-stream-p
-     flatmap flatten force head interleave interleave-delayed
-     map-stream memo-proc singleton tail the-empty-stream
+     flatmap flatmap* flatten force head interleave interleave-delayed
+     map-stream map-stream* memo-proc singleton tail the-empty-stream
      )))
 
 (defconstant the-empty-stream nil)
@@ -49,6 +49,17 @@
 (defun flatmap (proc stream)
   "Generate the single stream formed by applying the procedure (which returns a stream) to each item in the input stream and appending the results."
   (flatten (map-stream proc stream)))
+
+(defun map-stream* (proc stream tail-fn)
+  "Generates the stream formed by applying procedure to each element in input stream."
+  (if (empty-stream-p stream)
+      the-empty-stream
+    (cons-stream (funcall proc (head stream))
+                 (map-stream* proc (funcall tail-fn stream) tail-fn))))
+
+(defun flatmap* (proc stream tail-fn)
+  "Generate the single stream formed by applying the procedure (which returns a stream) to each item in the input stream and appending the results."
+  (flatten (map-stream* proc stream tail-fn)))
 
 (defun flatten (stream)
   "Appends the elements of a stream of streams to form a single stream."
