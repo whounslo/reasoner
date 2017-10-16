@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007, 2009-10, 2014 by William Hounslow
+;;; Copyright (C) 2007, 2009-10, 2014, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -37,35 +37,38 @@
     (when (funcall test (first rest-list-1) (first rest-list-2))
       (funcall function (first rest-list-1)))))
 
-(defmethod oneof-disjunction ((assumptions list) &optional (no-check (not nil)))
+(defmethod oneof-disjunction ((assumptions list)
+                              &optional (no-check (not nil)) ordered)
   (when assumptions
-    (oneof-disjunction (rest assumptions))
+    (oneof-disjunction (rest assumptions) no-check ordered)
     (dolist (a (rest assumptions))
       (when (or no-check
                 (not (conflictp (first assumptions) a)))
-        (record-binary-contradiction (first assumptions) a)))))
+        (add-contra (first assumptions) a)
+        (unless ordered (add-contra a (first assumptions)))))))
 
 (defmethod datum-object ((object t))
   object)
 
-(defmethod added-assumption ((object t) (a assumption) (assumptions list))
+(defmethod added-assumption
+    ((object t) (a assumption) (assumptions list) (tms core-atms))
   a)
 
 (defmethod order-control-disjunction ((object t) (e environment) (assumptions list))
   assumptions)
 
-(defmethod backtrack :before
-           ((e environment) (control-disjunctions list) (tms atms))
-  (when control-disjunctions
-    (setf (car control-disjunctions)
-      (order-control-disjunction (datum-object
-                                  (assumed-datum
-                                   (caar control-disjunctions)))
-                                 e
-                                 (car control-disjunctions)))))
+(defmethod order-first-control-disjunction
+           ((e environment) (control-disjunctions list) (tms core-atms))
+  (setf (car control-disjunctions)
+    (order-control-disjunction (datum-object
+                                (assumed-datum
+                                 (caar control-disjunctions)))
+                               e
+                               (car control-disjunctions))))
 
-;(defmethod backtrack ((e environment) (control-disjunctions list) (tms atms))
+;(defmethod backtrack ((e environment) (control-disjunctions list) (tms core-atms))
 ;  (cond (control-disjunctions
+;         (order-first-control-disjunction e control-disjunctions tms)
 ;         (do ((d (car control-disjunctions) (cdr d))
 ;              eprime
 ;              (solutions nil))
@@ -83,8 +86,9 @@
 ;               nil
 ;             (list e)))))
 
-(defmethod backtrack ((e environment) (control-disjunctions list) (tms atms))
+(defmethod backtrack ((e environment) (control-disjunctions list) (tms core-atms))
   (cond (control-disjunctions
+         (order-first-control-disjunction e control-disjunctions tms)
          (flatmap #'(lambda (a &aux eprime)
                       (setq eprime (add-assumption tms a e))
                       (if eprime
@@ -149,6 +153,12 @@
 ;;; inconsistent when checked against nogood database. (These checks are
 ;;; inhibited if no-check is non-NIL.)
 
+(defmethod add-assumption ((tms core-atms) (a assumption) (e environment)
+                           &optional (dont-create nil) (no-check nil)
+                                     (at-front (not nil)) (ordered (not nil)))
+  "Specialized environment union used where one environment is of length one."
+  (add-assumption tms a (assumptions e) dont-create no-check at-front ordered))
+
 (defmethod add-assumption ((tms atms) (a assumption) (e environment)
                            &optional (dont-create nil) (no-check nil)
                                      (at-front nil at-front-supp) (ordered (not nil))
@@ -163,17 +173,17 @@
     (add-assumption tms a assumptions dont-create no-check (at-front-p) ordered)))
 
 (defmethod add-assumption :around
-                          ((tms atms) (a assumption) (assumptions list)
+                          ((tms core-atms) (a assumption) (assumptions list)
                            &optional (dont-create nil) (no-check nil)
                                      (at-front nil) (ordered nil))
   (declare (ignore dont-create no-check at-front ordered))
   (multiple-value-bind (result e)
       (call-next-method)
     (when result
-      (added-assumption (datum-object (assumed-datum a)) a assumptions))
+      (added-assumption (datum-object (assumed-datum a)) a assumptions tms))
     (values result e)))
 
-(defmethod add-assumption ((tms atms) (a assumption) (assumptions list)
+(defmethod add-assumption ((tms core-atms) (a assumption) (assumptions list)
                            &optional (dont-create nil) (no-check nil)
                                      (at-front nil) (ordered nil))
   "Specialized environment union used where one environment is of length one."
@@ -227,7 +237,7 @@
           (execute-consumers environment)
         (mapc #'execute-consumers (label matched-node))))))
 
-(defmethod schedule ((tms atms) (e environment))
+(defmethod schedule ((tms core-atms) (e environment))
   "Run all consumers in all subsets of an environment."
   
   ;; For the environment {A, B, C}, consumers are executed in the order:
@@ -267,19 +277,19 @@
                      (cons nil subsets)))))
     subsets))
 
-(defmethod ensure-environment ((tms atms) (e environment)
+(defmethod ensure-environment ((tms core-atms) (e environment)
                                &optional (ordered nil))
   (declare (ignore ordered))
   e)
 
-(defmethod ensure-environment ((tms atms) (assumptions list)
+(defmethod ensure-environment ((tms core-atms) (assumptions list)
                                &optional (ordered nil))
   (uniquify-environment tms assumptions nil ordered))
 
 (defmethod assumptions ((assumptions list))
   assumptions)
   
-(defmethod solutions ((e environment) (choices list) (tms atms)
+(defmethod solutions ((e environment) (choices list) (tms core-atms)
                       &optional (dont-create nil))
   "Find maximal consistent supersets of environment, with respect to choices."
   (flet ((subsumesp (e1 e2)
@@ -303,7 +313,7 @@
 ;;; nschedule is the non-consing version of schedule. Environments are
 ;;; executed in size order and those of the same size in an arbitrary order.
 
-(defmethod nschedule ((tms atms) (e environment) &aux (size (size e)))
+(defmethod nschedule ((tms core-atms) (e environment) &aux (size (size e)))
   (with-accessors ((index environment-index))
       tms
     (do ((rest-index index (rest rest-index))

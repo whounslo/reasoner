@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007, 2009, 2011-14, 2016 by William Hounslow
+;;; Copyright (C) 2007, 2009, 2011-14, 2016-17 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -34,6 +34,7 @@
 (export '(make-assumption uniquify-environment
           in-p truep contradictoryp subsumesp
           assumption environment
+          core-atms atms basic-atms
           head tail
           schedule nschedule backtrack solutions
           order-control-disjunction added-assumption add-contradiction conflictp

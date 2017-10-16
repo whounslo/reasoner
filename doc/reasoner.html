@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
@@ -15,7 +14,7 @@
 
 <h1 class="title">Common Lisp Reasoner</h1>
 
-<h3 class="version">Version 3.5</h3>
+<h3 class="version">Version 3.6</h3>
 
 <h3 class="author">William Hounslow</h3>
 
@@ -135,6 +134,11 @@ of, say, following a chain of justifications, or obtaining the set of
 assumptions denoted by an environment) should inherit from the package
 <code class="package">ATMS</code> in their working package.</p>
 
+<p class="bodytext">The class <span class="defn">core-atms</span> is the common
+superclass of <span class="defn">atms</span> and <span class="defn">basic-atms</span>.
+For details of the distinction between the latter two classes, see
+<span class="section"><a href="#section11">Reasoning With Assumed Data</a></span>.</p>
+
 <table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><a id="makea"><span class="defn">make-assumption</span></a>
@@ -144,7 +148,7 @@ assumptions denoted by an environment) should inherit from the package
 </tr>
 <tr>
 <td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
+class="arglist">core-atms)</span>
 </td>
 <td>&nbsp;
 </td>
@@ -168,7 +172,7 @@ class="arglist">atms)</span>
 </tr>
 <tr>
 <td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
+class="arglist">core-atms)</span>
 </td>
 <td>&nbsp;
 </td>
@@ -194,7 +198,7 @@ an assumption, and all internal ATMS data structures that mention it.</p>
 </tr>
 <tr>
 <td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
+class="arglist">core-atms)</span>
 </td>
 <td>&nbsp;
 </td>
@@ -247,6 +251,24 @@ class="arglist">environment)</span>
 
 <p class="bodytext">Determines if the assumptions of <span class="argname">e1</span>
 are a subset of those of <span class="argname">e2</span>.</p>
+
+<table class="layout1" role="presentation">
+<tr>
+<td class="methsig"><span class="defn">contradictoryp</span>
+</td>
+<td class="methsig1">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>environment <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Determines if an environment is contradictory.</p>
 
 <table class="layout1" role="presentation">
 <tr>
@@ -304,36 +326,7 @@ class="arglist">node)</span>
 
 <table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><span class="defn">contradictoryp</span>
-</td>
-<td class="methsig1">Primary Method
-</td>
-</tr>
-<tr>
-<td class="methsig2"><span class="arglist">(</span>environment <span
-class="arglist">environment)</span>
-</td>
-<td>&nbsp;
-</td>
-</tr>
-</table>
-
-<p class="bodytext">Determines if an environment is contradictory.</p>
-
-<table class="layout1" role="presentation">
-<tr>
-<td class="methsig"><span class="defn">reasoner::*falsity*</span>
-</td>
-<td class="methsig1">Variable
-</td>
-</tr>
-</table>
-
-<p class="bodytext">The distinguished false node.</p>
-
-<table class="layout1" role="presentation">
-<tr>
-<td class="methsig"><span class="defn">*atms*</span>
+<td class="methsig"><a id="atms"><span class="defn">*atms*</span></a>
 </td>
 <td class="methsig1">Variable
 </td>
@@ -753,7 +746,7 @@ missing from <span class="argname">class</span>. The default method signals an e
 </td>
 </tr>
 <tr>
-<td class="methsig2">antecedents
+<td class="methsig2">atms antecedents
 </td>
 <td>&nbsp;
 </td>
@@ -1817,6 +1810,15 @@ using the <span class="defn">:assume</span> qualifier accepted by the <span
 class="defn"><a href="#defc">defconstraint</a></span> and <span
 class="defn"><a href="#defru">defrule</a></span> macros.</p>
 
+<p class="bodytext">The latter task is performed by <span
+class="defn"><a href="#back">backtrack</a></span> or <span
+class="defn"><a href="#solu">solutions</a></span>. Both can be used
+with <span class="defn">atms</span> or <span class="defn">basic-atms</span>,
+which can be supplied by dynamically re&shy;binding <span
+class="defn"><a href="#atms">*atms*</a></span>.
+<span class="defn">basic-atms</span> exploits incremental, ordered adding of assumptions
+to record significantly less information about contradictory environments.</p>
+
 <table class="layout1" role="presentation">
 <tr>
 <td class="methsig"><a id="assv"><span class="defn">assume-slot-value</span></a>
@@ -1832,8 +1834,7 @@ class="defn"><a href="#defru">defrule</a></span> macros.</p>
 </tr>
 <tr>
 <td class="methsig2"><span
-class="arglist">&amp;optional</span> assumption no-check<span
-class="arglist"></span>
+class="arglist">&amp;optional</span> assumption no-check
 </td>
 <td>&nbsp;
 </td>
@@ -1861,8 +1862,7 @@ class="defn"><a href="#makea">make-assumption</a></span>. Returns assumption.</p
 </tr>
 <tr>
 <td class="methsig2"><span
-class="arglist">&amp;optional</span> catchall-assumption no-check<span
-class="arglist"></span>
+class="arglist">&amp;optional</span> catchall-assumption no-check
 </td>
 <td>&nbsp;
 </td>
@@ -1875,6 +1875,24 @@ class="argname">catchall-assumption</span> is
 supplied, it is used exclusively; if a value has previously been assumed (see
 <span class="defn"><a href="#feta">fetch-assumption</a></span>), that assumption
 is used; otherwise assumptions are created. Returns a list of assumptions.</p>
+
+<table class="layout1" role="presentation">
+<tr>
+<td class="methsig"><span class="defn">describe-data</span>
+</td>
+<td class="methsig1">Function
+</td>
+</tr>
+<tr>
+<td class="methsig2">environment
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">Describes the assumed data of
+<span class="argname">environment</span>, which may be an object or a list of assumptions.</p>
 
 <table class="layout1" role="presentation">
 <tr>
@@ -1899,7 +1917,7 @@ class="arglist">list)</span>
 </tr>
 <tr>
 <td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
+class="arglist">core-atms)</span>
 </td>
 <td>&nbsp;
 </td>
@@ -1912,9 +1930,13 @@ one choice from each of a number of sets, and where the solution does not
 depend on the order in which choices are made. See: de Kleer and Williams,
 &lsquo;Back to Backtracking: Controlling the ATMS&rsquo;, AAAI-86.</p>
 
-<p class="bodytext">For optimal performance, the order in which the assumption
-sets are created and the order in which they appear in <span
-class="argname">control-disjunctions</span> should be the same.</p>
+<p class="bodytext">For optimal performance, the assumption sets
+should be created in the order in which they will appear in <span
+class="argname">control-disjunctions</span>.
+If <span class="defn">basic-atms</span> is used, they <em>must</em> be
+created in this order.</p>
+
+<p class="bodytext">Uses <span class="defn"><a href="#nsche">nschedule</a></span>.</p>
 
 <table class="layout1" role="presentation">
 <tr>
@@ -1932,7 +1954,7 @@ class="arglist">list)</span>
 </tr>
 <tr>
 <td class="methsig2"><span
-class="arglist">&amp;optional</span> no-check
+class="arglist">&amp;optional</span> no-check ordered
 </td>
 <td>&nbsp;
 </td>
@@ -1943,7 +1965,9 @@ class="arglist">&amp;optional</span> no-check
 as contradictory. May be used to stipulate mutually-exclusive choices in addition to the
 control disjunctions. If <span class="argname">no-check</span> is non-<span
 class="defn">nil</span> (the default), no checking for previously-recorded conflicts
-is performed.</p>
+is performed; if <span class="argname">ordered</span> is non-<span class="defn">nil</span>,
+any pair of assumptions is guaranteed to be added to an existing environment in the order
+supplied, so that less information need be recorded.</p>
 
 <table class="layout1" role="presentation">
 <tr>
@@ -1975,75 +1999,19 @@ assumption is a slot value.</p>
 </td>
 </tr>
 <tr>
-<td class="methsig2">object a assumptions
+<td class="methsig2">object a assumptions tms
 </td>
 <td>&nbsp;
 </td>
 </tr>
 </table>
 
-<p class="bodytext">Called
+<p class="bodytext">Called by <span class="defn"><a href="#back">backtrack</a></span>
 if <span class="argname">a</span>, the selected assumption, is successfully added to
 <span class="argname">assumptions </span>(i.e.,
 a consistent environment results). <span class="argname">object</span> is as above. An
 application-specific method can be supplied to detect contradictions
 explicitly. See <span class="defn"><a href="#addc">add-contradiction</a></span>.</p>
-
-<table class="layout1" role="presentation">
-<tr>
-<td class="methsig"><a id="sche"><span class="defn">schedule</span></a>
-</td>
-<td class="methsig1">Primary Method
-</td>
-</tr>
-<tr>
-<td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
-</td>
-<td>&nbsp;
-</td>
-</tr>
-<tr>
-<td class="methsig2"><span class="arglist">(</span>e <span
-class="arglist">environment)</span>
-</td>
-<td>&nbsp;
-</td>
-</tr>
-</table>
-
-<p class="bodytext">Runs all consumers in all subsets of an environment. For the
-environment {<var>A, B, C</var>}, consumers are executed in the order: {<var>A</var>},
-{<var>B</var>}, {<var>A, B</var>}, {<var>C</var>}, {<var>A, C</var>}, {<var>B, C</var>}, {<var>A,
-B, C</var>}. Returns a list of consistent subsets. See the
-<a href="reasoner.html#back">paper</a> by de Kleer and Williams.</p>
-
-<table class="layout1" role="presentation">
-<tr>
-<td class="methsig"><span class="defn">nschedule</span>
-</td>
-<td class="methsig1">Primary Method
-</td>
-</tr>
-<tr>
-<td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
-</td>
-<td>&nbsp;
-</td>
-</tr>
-<tr>
-<td class="methsig2"><span class="arglist">(</span>e <span
-class="arglist">environment)</span>
-</td>
-<td>&nbsp;
-</td>
-</tr>
-</table>
-
-<p class="bodytext">The non-consing version of <span class="defn"><a
-href="#sche">schedule</a></span>. Environments are executed in size order and those
-of the same size in an arbitrary order.</p>
 
 <table class="layout1" role="presentation">
 <tr>
@@ -2068,7 +2036,7 @@ class="arglist">list)</span>
 </tr>
 <tr>
 <td class="methsig2"><span class="arglist">(</span>tms <span
-class="arglist">atms)</span>
+class="arglist">core-atms)</span>
 </td>
 <td>&nbsp;
 </td>
@@ -2089,23 +2057,63 @@ and those that are consistent and maximal (i.e., with respect to <span
 class="argname">choices</span>) returned. No environment objects will
 be created if <span class="argname">dont-create</span> is non-<span class="defn">nil</span>.</p>
 
+<p class="bodytext">Uses <span class="defn"><a href="#sche">schedule</a></span>.</p>
+
 <table class="layout1" role="presentation">
 <tr>
-<td class="methsig"><span class="defn">describe-data</span>
+<td class="methsig"><a id="sche"><span class="defn">schedule</span></a>
 </td>
-<td class="methsig1">Function
+<td class="methsig1">Primary Method
 </td>
 </tr>
 <tr>
-<td class="methsig2">environment
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">core-atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
 </td>
 <td>&nbsp;
 </td>
 </tr>
 </table>
 
-<p class="bodytext">Describes the assumed data of
-<span class="argname">environment</span>, which may be an object or a list of assumptions.</p>
+<p class="bodytext">Runs all consumers in all subsets of an environment. For the
+environment {<var>A, B, C</var>}, consumers are executed in the order: {<var>A</var>},
+{<var>B</var>}, {<var>A, B</var>}, {<var>C</var>}, {<var>A, C</var>}, {<var>B, C</var>}, {<var>A,
+B, C</var>}. Returns a list of consistent subsets. See the
+<a href="reasoner.html#back">paper</a> by de Kleer and Williams.</p>
+
+<table class="layout1" role="presentation">
+<tr>
+<td class="methsig"><a id="nsche"><span class="defn">nschedule</span></a>
+</td>
+<td class="methsig1">Primary Method
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>tms <span
+class="arglist">core-atms)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+<tr>
+<td class="methsig2"><span class="arglist">(</span>e <span
+class="arglist">environment)</span>
+</td>
+<td>&nbsp;
+</td>
+</tr>
+</table>
+
+<p class="bodytext">The non-consing version of <span class="defn"><a
+href="#sche">schedule</a></span>. Environments are executed in size order and those
+of the same size in an arbitrary order.</p>
 
 </body>
 

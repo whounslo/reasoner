@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007, 2009-11 by William Hounslow
+;;; Copyright (C) 2007, 2009-11, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -27,7 +27,7 @@
   (or (= row2 (- row1 (- col2 col1)))
       (= row2 (+ row1 (- col2 col1)))))
       
-(defmethod added-assumption ((q queen) (a assumption) (assumptions list))
+(defmethod added-assumption ((q queen) (a assumption) (assumptions list) (tms core-atms))
   (let ((col (find-assumed-value a 'rank-number t))
         (row (find-assumed-value a 'file-number)))
     (dolist (assumption assumptions)
@@ -36,7 +36,8 @@
                        (range-min row)
                        (range-min (find-assumed-value assumption 'rank-number t))
                        (range-min (find-assumed-value assumption 'file-number)))
-          (add-contradiction (list (assumed-datum a)
+          (add-contradiction tms
+                             (list (assumed-datum a)
                                    (assumed-datum assumption))))))))
 
 (let (board a)
@@ -74,8 +75,12 @@
   ) ;end let board
 
 ;;; n-queens (backtracking search)
-  
+
 (defun queens (&optional (n 8) &key (verbose t))
+  (let ((*atms* (make-instance 'basic-atms)))
+    (queens1 n :verbose verbose)))
+  
+(defun queens1 (&optional (n 8) &key (verbose t))
   (let (queen a control-disjunctions
         (rows (make-list n))
         stream)
@@ -88,7 +93,8 @@
           (place-randomly a d n)
           (push a (nth row rows)))
         (push d control-disjunctions)))
-    (mapc #'oneof-disjunction rows)
+    (dolist (d rows)
+      (oneof-disjunction d 'no-check 'ordered))
                                                ; Stipulate only one queen per
                                                ; row.
     (setq stream (backtrack (uniquify-environment *atms* nil)

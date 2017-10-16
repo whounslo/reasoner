@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007-2014, 2016 by William Hounslow
+;;; Copyright (C) 2007-2014, 2016, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -38,8 +38,6 @@
 
 (defparameter *empty-environment* (uniquify-environment *atms* nil)
   "The distinguished environment of no assumptions.")
-
-(defparameter *falsity* (make-instance 'false-node))
 ) ;end encapsulate-variables
 
 ;;; extended-class
@@ -226,21 +224,22 @@
                                               direct-slot-definitions)
   (declare (ignorable name))
 #+(or allegro lispworks sbcl)
-  (do ((type-1 (slot-definition-type (car direct-slot-definitions)) type-2)
-       type-2
-       (direct-slots direct-slot-definitions (cdr direct-slots)))
-      ((endp (cdr direct-slots)))
-    (setq type-2 (slot-definition-type (cadr direct-slots)))
-    (unless (eq type-1 t)
-      (multiple-value-bind (is-subtype valid)
-          (subtypep type-1 type-2)
-        (unless (or is-subtype (not valid))
-          (error "While computing the effective slot definition of ~
+  (unless (class-finalized-p class)
+    (do ((type-1 (slot-definition-type (car direct-slot-definitions)) type-2)
+         type-2
+         (direct-slots direct-slot-definitions (cdr direct-slots)))
+        ((endp (cdr direct-slots)))
+      (setq type-2 (slot-definition-type (cadr direct-slots)))
+      (unless (eq type-1 t)
+        (multiple-value-bind (is-subtype valid)
+            (subtypep type-1 type-2)
+          (unless (or is-subtype (not valid))
+            (error "While computing the effective slot definition of ~
                      slot ~A, class ~A, ~
                      found definition(s) in superclass(es) ~
                      with incompatible type specifier(s)."
-            name
-            class)))))
+              name
+              class))))))
   (let ((effective-slot (call-next-method))
         (count-slot (find-if-not #'null direct-slot-definitions
                                  :key #'slot-definition-count))
@@ -309,7 +308,7 @@
 (defvar *instance-table* (make-hash-table :test #'eq))
 
 (defun find-instance (name &optional (errorp t))
-  (cond ((gethash name *instance-table*))
+  (cond ((and name (gethash name *instance-table*)))
         ((not errorp) nil)
         ((legal-instance-name-p name)
          (error "No instance named: ~S." name))
@@ -388,7 +387,8 @@
   instance)
 
 (defmethod shared-initialize ((instance extended-object)
-                              slot-names &rest initargs
+                              slot-names
+                              &rest initargs
                               &aux (class (class-of instance)))
   (dolist (slot (class-slots class))
     (with-accessors ((slot-initargs slot-definition-initargs)
@@ -577,7 +577,7 @@
                      (error
                 "Assertion would cause contradiction of the empty environment."
                                     )
-                   (add-contradiction antecedents))))
+                   (add-contradiction *atms* antecedents))))
               ((not (typep node 'range)))
 
               ;; For values that are ranges, provided one is not a
@@ -638,18 +638,6 @@
            ((new-node standard-slot-value) (node standard-slot-value) nodes)
   (declare (ignore nodes))
   (not nil))
-
-(defun add-contradiction (antecedents)
-  (add-consumer *atms*
-                antecedents
-                #'(lambda (justification)
-                    (reinitialize-instance justification
-                                           :informant 'contradiction
-                                           :consequent *falsity*)
-                    (add-justification *atms*
-                                       *falsity*
-                                       justification))
-                :before))
 
 (defmethod execute-consumer ((node standard-slot-value))
   "Triggers all class-consumers applicable to an incoming assertion."
@@ -842,21 +830,25 @@
 
 ;;; copy-instance
 
-(defmethod copy-instance ((instance standard-object) &rest initargs)
+(defmethod copy-instance ((instance standard-object)
+                          &rest initargs
+                          &aux (class (class-of instance)))
   "Creates a new instance and copies values of slots that have an :initarg option."
-  (apply #'make-instance (class-name (class-of instance))
-         (mapcan #'(lambda (slot)
-                     (with-accessors ((slot-initargs slot-definition-initargs)
-                                      (slot-name slot-definition-name))
-                                     slot
-                       (multiple-value-bind (init-key init-value foundp)
-                             (get-properties initargs slot-initargs)
-                         (cond (foundp (list init-key init-value))
-                               ((null slot-initargs) nil)
-                               ((slot-boundp instance slot-name)
-                                (list (car slot-initargs)
-                                      (slot-value instance slot-name)))))))
-                   (class-slots (class-of instance)))))
+  (apply #'make-instance class
+         (nconc (mapcan #'(lambda (slot)
+                            (with-accessors ((slot-initargs slot-definition-initargs)
+                                             (slot-name slot-definition-name))
+                                slot
+                              (multiple-value-bind (init-key init-value foundp)
+                                  (get-properties initargs slot-initargs)
+                                (declare (ignore init-key init-value))
+                                (cond (foundp nil)
+                                      ((null slot-initargs) nil)
+                                      ((slot-boundp instance slot-name)
+                                       (list (car slot-initargs)
+                                             (slot-value instance slot-name)))))))
+                  (class-slots class))
+                initargs)))
 
 ;;; classify
 

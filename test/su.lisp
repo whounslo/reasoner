@@ -1,4 +1,4 @@
-;;; Copyright (C) 2009-11, 2013 by William Hounslow
+;;; Copyright (C) 2009-11, 2013, 2016-17 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -181,7 +181,7 @@
                 (eql (box-index row-index-1) (box-index row-index-2)))
            (eql row-index-1 row-index-2))))
 
-(defmethod added-assumption ((c su-cell-g) (a assumption) (assumptions list))
+(defmethod added-assumption ((c su-cell-g) (a assumption) (assumptions list) (tms core-atms))
   (let ((col-index (find-assumed-value c 'col))
         (row-index (find-assumed-value c 'row))
         (value (find-assumed-value a 'value)))
@@ -193,7 +193,8 @@
                             (range-min (find-assumed-value assumption 'col t))
                             (range-min (find-assumed-value assumption 'row t))
                             (range-min (find-assumed-value assumption 'value)))
-          (add-contradiction (list (assumed-datum a)
+          (add-contradiction tms
+                             (list (assumed-datum a)
                                    (assumed-datum assumption))))))))
 
 (defmacro su-compile-truename () `',*compile-file-truename*)

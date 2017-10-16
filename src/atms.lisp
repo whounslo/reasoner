@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007-2011, 2014 by William Hounslow
+;;; Copyright (C) 2007-2011, 2014, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -9,7 +9,7 @@
 (in-package atms)
 (eval-when (:execute :compile-toplevel :load-toplevel)
   (export
-   '(assumption atms environment
+   '(assumption core-atms atms basic-atms environment
      justification node standard-node false-node temporary-node
      antecedents consequent consequents contradictoryp datum informant
      justifications label name contras assumptions nodes size
@@ -17,20 +17,33 @@
      make-assumption discard-assumption add-justification
      delete-from-environments
      subsumesp in-p truep union-environments uniquify-environment
-     add-consumer consumer execute-consumer execute-consumers
+     add-consumer consumer execute-consumer execute-consumers add-contradiction
      absorb insert singletonp
      )))
 
-(defclass atms ()
+(defclass core-atms ()
     ((environment-hash-table :initform (make-hash-table :test #'equal)
-                             :reader environment-hash-table)
+                             :reader environment-hash-table
+                             :initarg :environment-hash-table)
      (environments :initform nil :accessor environments
-                   :documentation "Set of all environments, ordered by size.")
-     (environment-index :initform nil :accessor environment-index)
+                   :initarg :environments
+                   :documentation "Set of all environments, ordered by decreasing size.")
+     (environment-index :initform nil :accessor environment-index
+                        :initarg :environment-index)
      (nogoods :initform nil :accessor nogoods
               :documentation
-              "Database of contradictory environments, ordered by size."))
+              "Database of contradictory environments, ordered by increasing size.")
+     (false-node :initform (make-instance 'false-node) :reader false-node
+                 :documentation "The distinguished false node."))
   (:documentation "An assumption-based TMS."))
+
+(defclass atms (core-atms)
+    ()
+  (:documentation "An assumption-based TMS."))
+
+(defclass basic-atms (core-atms)
+    ()
+  (:documentation "ATMS requiring ordered adding, by serial number, of assumptions."))
 
 (defclass environment ()
     ((assumptions :reader assumptions :initarg :assumptions)
@@ -77,7 +90,7 @@
               :documentation
               "Minimal nogoods of length three or greater in which assumption appears.")
      (contras :initform nil :accessor contras
-              :documentation "Assumptions that this is inconsistent with."))
+              :documentation "Assumptions that assumption is inconsistent with."))
   (:documentation "Designates a decision to assume, without any commitment as to what is assumed."
          ))
 
@@ -92,6 +105,10 @@
     ((order :reader order :initarg :order
             :documentation "Ordering placed on consumers within an environment."))
   (:documentation "Used to record a consumer of a list of nodes."))
+
+(defmethod initialize-instance :after ((instance core-atms) &rest initargs)
+  (declare (ignore initargs))
+  (uniquify-environment instance nil))
 
 (defmethod print-object ((instance assumption) stream)
   (print-unreadable-object (instance stream :identity t)
@@ -111,12 +128,12 @@
   (consequent (car (consequents n))))
 
 (defmethod add-justification
-           ((tms atms) (n assumption) antecedents &optional informant)
+           ((tms core-atms) (n assumption) antecedents &optional informant)
   (declare (ignore antecedents informant))
   (error "Attempt to justify an assumption."))
 
 (defmethod add-justification
-           ((tms atms) (n node) (antecedents list) &optional informant)
+           ((tms core-atms) (n node) (antecedents list) &optional informant)
   "Add a justification to a node."
   (let ((justification (make-instance 'justification
                                       :informant informant
@@ -127,7 +144,7 @@
     (add-justification tms n justification)))
 
 (defmethod add-justification
-           ((tms atms) (n node) (j justification) &optional informant)
+           ((tms core-atms) (n node) (j justification) &optional informant)
   "Add a justification to a node, and propagate."
   (declare (ignore informant))
   (push j (justifications n))
@@ -141,7 +158,7 @@
   `(setf ,place
      (delete ,item ,place ,@args)))
 
-(defmethod propagate-label-update ((j justification) (tms atms))
+(defmethod propagate-label-update ((j justification) (tms core-atms))
   "Propagate the belief states of the antecedents to the consequent."
   (update-label (consequent j)
                 tms
@@ -149,7 +166,7 @@
                             (union-environments tms environments))
                         (cross-product (mapcar #'label (antecedents j))))))
 
-(defmethod update-label ((n node) (tms atms) (label-increment list))
+(defmethod update-label ((n node) (tms core-atms) (label-increment list))
   "Updates label following the addition of a new justification to a node."
 
   ;; The increment contributed by the new justification is appended to the
@@ -184,14 +201,14 @@
         (propagate-label-update n tms)))
     n))
 
-(defmethod propagate-label-update ((n node) (tms atms))
+(defmethod propagate-label-update ((n node) (tms core-atms))
   "Propagate label change forward or contradiction backward."
   (if (contradictoryp n)
       (propagate-contradiction n tms)
     (dolist (justification (consequents n))
       (propagate-label-update justification tms))))
 
-(defmethod propagate-contradiction ((n node) (tms atms))
+(defmethod propagate-contradiction ((n node) (tms core-atms))
   "Propagate a contradiction backwards."
   (dolist (environment (label n))
     (no-good environment tms))
@@ -207,65 +224,78 @@
 (defmethod indexed-size ((environments cons))
   (size (car environments)))
 
-(defmethod no-good ((e environment) (tms atms))
+(defun find-environments (size atms &key (test #'=))
+  (find size (environment-index atms) :key #'indexed-size :test test))
+
+(defmethod no-good ((e environment) (tms core-atms))
   "Makes environment nogood."
-  (unless (assumptions e)
-    (error "Contradiction of the empty environment"))
-
-  (record-nogood tms e)
-
-  ;; Set contradictory bit of this and all subsumed environments.
-  ;; Remove all of these environments from every node label.
-  (do ((entry-point (find (size e) (environment-index tms)
-                          :key #'indexed-size
-                          :test #'=))
-       (environments (environments tms) (cdr environments)))
-      ((eq environments entry-point)
-       (set-contradictory e))
-    (unless (contradictoryp (car environments))
-      (when (subsumesp e (car environments))
-        (set-contradictory (car environments)))))
-  e)
-
-(defmethod record-nogood ((tms atms) (e environment))
-  "Adds environment to nogood database."
-  (flet ((add-nogood (instance environment &optional delete-fn)
-           (with-slots (nogoods)
-               instance
-             
-             ;; Database is a list ordered by increasing size of environment.
-             (cond ((not (insert environment nogoods #'< :key #'size))
-                    (setf nogoods (list environment)))
-                   (delete-fn
-                    (delete-if delete-fn
-                               (member environment nogoods :test #'eq)))))))
-    (with-slots (assumptions)
-        e
-      (cond ((eql (size e) 2)
-             (record-binary-contradiction (first assumptions)
-                                          (second assumptions)))
-            (t (add-nogood tms e #'(lambda (environment)
-                                     (unless (eq environment e)
-                                       (when (subsumesp e environment)
-                                         (dolist (a (assumptions environment))
-                                           (deletef (nogoods a)
-                                                    environment
-                                                    :test #'eq))
-                                         (not nil)))))
-               (dolist (a assumptions)
-                 (add-nogood a e)))))))
+  (with-slots (assumptions size)
+      e
+    (unless assumptions
+      (error "Contradiction of the empty environment."))
+    
+    (if (eql size 2)
+        (record-binary-contradiction tms
+                                     (first assumptions)
+                                     (second assumptions))
+      (record-nogood tms e))
+    
+    ;; Set contradictory bit of this and all subsumed environments.
+    ;; Remove all of these environments from every node label.
+    (do ((exit-point (find-environments size tms))
+         (environments (environments tms) (cdr environments)))
+        ((eq environments exit-point))
+      (unless (contradictoryp (car environments))
+        (when (subsumesp e (car environments))
+          (set-contradictory (car environments)))))
+    (set-contradictory e)
+    e))
 
 (defconstant assumption-ordering-predicate #'>)
 
 (defmethod add-contra ((a1 assumption) (a2 assumption))
-  (or (insert a1 (contras a2) assumption-ordering-predicate :key #'serial-number)
-      (setf (contras a2) (list a1))))
+  (or (insert a2 (contras a1) assumption-ordering-predicate :key #'serial-number)
+      (setf (contras a1) (list a2))))
 
-(defmethod record-binary-contradiction ((a1 assumption) (a2 assumption))
+(defmethod record-binary-contradiction ((tms core-atms) (a1 assumption) (a2 assumption))
+  "Record binary contradiction, employing specialized representation."
+  (add-contra a1 a2)
+  (not nil))
+
+(defmethod record-binary-contradiction ((tms atms) (a1 assumption) (a2 assumption))
   "Record binary contradiction, employing specialized representation."
   (add-contra a1 a2)
   (add-contra a2 a1)
   (not nil))
+
+(defun add-nogood (object environment cleanup)
+  (with-slots (nogoods)
+      object
+    
+    ;; Database is a list ordered by increasing size of environment.
+    (cond ((not (insert environment nogoods #'< :key #'size))
+           (setf nogoods (list environment)))
+          (cleanup
+           (delete-if #'(lambda (e)
+                          (unless (eq e environment)
+                            (when (subsumesp environment e)
+                              (dolist (a (assumptions e))
+                                (deletef (nogoods a)
+                                         e
+                                         :test #'eq))
+                              (not nil))))
+                      (member environment nogoods :test #'eq))))))
+
+(defmethod record-nogood ((tms core-atms) (e environment))
+  "Adds environment to nogood database."
+  (add-nogood tms e nil)
+  (add-nogood (first (assumptions e)) e nil))
+
+(defmethod record-nogood ((tms atms) (e environment))
+  "Adds environment to nogood database."
+  (add-nogood tms e 'cleanup)
+  (dolist (a (assumptions e))
+    (add-nogood a e nil)))
 
 (defmethod set-contradictory ((e environment))
   "Set contradictory bit of environment and remove from every node label."
@@ -274,7 +304,7 @@
   (setf (nodes e) nil
         (contradictoryp e) (not nil)))
 
-(defmethod make-environment ((tms atms) (assumptions list))
+(defmethod make-environment ((tms core-atms) (assumptions list))
   (let* ((size (length assumptions))
          (environment (make-instance 'environment
                         :assumptions assumptions
@@ -289,9 +319,7 @@
     (with-slots (environments environment-index)
         tms
       (cond (environments
-             (setq entry-point (or (find size environment-index
-                                         :key #'indexed-size
-                                         :test #'<=)
+             (setq entry-point (or (find-environments size tms :test #'<=)
                                    environments)
                  entry-point-size (indexed-size entry-point))
              (unless (> size entry-point-size)
@@ -311,13 +339,13 @@
                  environment-index (list entry-point)))))
     environment))
 
-(defmethod make-assumption ((tms atms) &optional (name nil))
+(defmethod make-assumption ((tms core-atms) &optional (name nil))
   (let ((assumption (make-instance 'assumption :name name)))
     (setf (serial-number assumption) (incf (last-serial-number assumption))
           (label assumption) (list (make-environment tms (list assumption))))
     assumption))
 
-(defmethod discard-assumption ((tms atms) (n assumption))
+(defmethod discard-assumption ((tms core-atms) (n assumption))
   "Garbage assumption."
   ;; Should really be done when environment hash-table is grown.
   (let ((environment (car (label n))))
@@ -386,7 +414,7 @@
   (length assumptions))
 
 (defmethod add-consumer
-           ((tms atms) (antecedents list) consumer &optional (order :after))
+           ((tms core-atms) (antecedents list) consumer &optional (order :after))
   "Add a consumer, attached to a temporary node."
   (add-justification tms
                      (make-instance 'temporary-node :order order)
@@ -455,6 +483,18 @@
   (declare (ignore initargs))
   (mark-for-deletion (consequent j)))
 
+(defun add-contradiction (atms antecedents &aux (falsity (false-node atms)))
+  (add-consumer atms
+                antecedents
+                #'(lambda (justification)
+                    (reinitialize-instance justification
+                                           :informant 'contradiction
+                                           :consequent falsity)
+                    (add-justification atms
+                                       falsity
+                                       justification))
+                :before))
+
 (defun remove-subsumptions (environments)
   "Removes environments that are supersets of others."
   (if environments
@@ -469,11 +509,11 @@
   (dolist (environment (label node))
     (deletef (nodes environment) node :test #'eq)))
 
-(defmethod union-environments ((tms atms) (environments list))
+(defmethod union-environments ((tms core-atms) (environments list))
   (uniquify-environment tms (if environments
                                 (reduce #'union environments :key #'assumptions))))
 
-(defmethod uniquify-environment ((tms atms) (assumptions list)
+(defmethod uniquify-environment ((tms core-atms) (assumptions list)
                                  &optional (dont-create nil) (ordered nil))
   "Returns a unique environment object."
   (when (singletonp assumptions)
