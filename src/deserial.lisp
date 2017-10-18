@@ -1,4 +1,4 @@
-;;; Copyright (C) 2011-2014, 2016 by William Hounslow
+;;; Copyright (C) 2011-2014, 2016, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -972,10 +972,8 @@
                                      (1 'exactly-one)
                                      (big 'one-or-more))))))
           (ensure-range-class count-type-name
-                              :options (if supertype-name
-                                           `((include ,supertype-name)))
-                              :elements numeric-range
-                              :class nil))))
+                              :include supertype-name
+                              :elements numeric-range))))
     count-type-name))
 
 (defun adjust-count-type (type supertype)
@@ -1108,9 +1106,9 @@
   (let ((name (element-attribute element 'name :xsd))
         (superclass (element-attribute subelement 'base :xsd)))
     (ensure-range-class name
-                        :options (case superclass
+                        :include (case superclass
                                    ((nil xmlxsd::string xmlxsd::integer) nil)
-                                   (t `((:include ,superclass))))
+                                   (t superclass))
                         :documentation (if (stringp element-content) element-content)
                         :elements content)))
 

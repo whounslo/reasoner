@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007-2014 by William Hounslow
+;;; Copyright (C) 2007-2014, 2017 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -237,10 +237,11 @@
      (typep object type))))
 
 (defmacro defrange (&rest args)
-  (let (name options documentation body)
-    (multiple-value-setq (name options documentation body)
-      (parse-defrange args))
-    `(ensure-range-class ',name :options ',options
+  (multiple-value-bind (name include external-type documentation body)
+      (parse-defrange args)
+    `(ensure-range-class ',name
+                         :include ',include
+                         :external-type ',external-type
                          :documentation ,documentation
                          :elements ',body)))
 
@@ -257,12 +258,17 @@
     (when (and (numberp (car body))
                (endp (cdr body)))
       (setq body (make-numeric-range :min (car body) :max (car body))))
-    (values name options documentation body)))
+    (values name
+            (cadr (assoc :include options :test #'eq))
+            (cadr (assoc :external-type options :test #'eq))
+            documentation
+            body)))
 
 (defun ensure-range-class-using-class (class class-name
                                        &rest initargs
                                        &key elements
                                        &allow-other-keys)
+  (declare (ignorable elements))
   (apply #'ensure-class-using-class
          class
          class-name
@@ -273,31 +279,28 @@
                       `((:value ',elements ,(constantly elements)))))
                 initargs)))
 
-(defun ensure-range-class
-       (name &key options documentation elements (class (find-class name nil)))
+(defun ensure-range-class (name &key include external-type documentation elements
+                                &aux (class (find-class name nil)))
   (labels ((find-include (superclass elements)
              (or (dolist (subrange (class-direct-subclasses superclass))
-                   (when (subsetp elements (elements subrange))
-                     (return (if (equal elements (elements subrange))
-                                 superclass
-                               (find-include subrange elements)))))
+                   (unless (or (eq class subrange)
+                               (equal elements (elements subrange)))
+                     (when (subsetp elements (elements subrange))
+                       (return (find-include subrange elements)))))
                  superclass)))
-    (let ((includes (assoc :include options :test #'eq))
-          superclasses)
-      (setq superclasses (list (or (and includes
-                                        (find-class (cadr includes) nil))
+    (let (superclasses)
+      (setq superclasses (list (or (and include (find-class include nil))
                                    (etypecase elements
                                      (numeric-range* (find-class 'numeric-range))
                                      (symbolic-range*
                                       (find-include (find-class 'symbolic-range)
                                                     elements))))))
-      (apply #'ensure-range-class-using-class
-             class
-             name
-             :direct-superclasses superclasses
-             :documentation documentation
-             :elements elements
-             (assoc :external-type options :test #'eq)))))
+      (ensure-range-class-using-class class
+                                      name
+                                      :direct-superclasses superclasses
+                                      :external-type external-type
+                                      :documentation documentation
+                                      :elements elements))))
 
 (defun numeric-subrangep (range1 range2)
   (and (unbounded>= (range-min range1)
