@@ -4,6 +4,6 @@ The Common Lisp Reasoner extends the Common Lisp Object System (CLOS) to incorpo
 
 ## Status
 
-It has been tested in Allegro 9.0, clisp 2.48, ECL 13.5.1, LispWorks 6.1.1 and SBCL 1.3.5.
+It has been tested in Allegro 10.0, clisp 2.48, ECL 13.5.1, LispWorks 6.1.1 and SBCL 1.3.21.
 
 It should run unmodified in any Lisp that implements the metaobject protocol, and can be used in conjunction with [Closer to MOP](https://common-lisp.net/project/closer/).

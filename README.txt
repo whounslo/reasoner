@@ -1,4 +1,4 @@
-Common Lisp Reasoner, Version 3.5
+Common Lisp Reasoner, Version 3.6
 
 
 What is it?
@@ -12,8 +12,8 @@ AI-related applications, such as scheduling, planning and diagnosis.
 Status
 ------
 
-It has been tested in Allegro 9.0, clisp 2.48, ECL 13.5.1, LispWorks 6.1.1
-and SBCL 1.3.5.
+It has been tested in Allegro 10.0, clisp 2.48, ECL 13.5.1, LispWorks 6.1.1
+and SBCL 1.3.21.
 
 It should run unmodified in any Lisp that implements the metaobject
 protocol, and can be used in conjunction with Closer to MOP
@@ -29,19 +29,20 @@ Closer to MOP to fill this lacuna.
 Changes Since Last Release
 --------------------------
 
-During deserialization, if elements contain many subelements, the
-variable *count-subelements* may be bound to nil, or the method
-count-subelements-p specialized, to eliminate the considerable
-overhead of maintaining a count of these values.
+A variant of the standard ATMS, basic-atms, which uses less storage, has
+been introduced.
+
+The distinguished false node has been incorporated into the ATMS object,
+making it easier to create and use multiple ATMSs.  add-contradiction and 
+added-assumption now require a tms argument.
 
 Bug fixes:
 
-XML Schema deserialization failed in clisp due to defaulting of
-:direct-superclasses argument of ensure-class if class exists and in SBCL if
-it doesn't.
+A non-local exit from a user-supplied method within backtrack caused a
+return value of nil to be cached.
 
-Forward-referenced base complexTypes were assigned the wrong place in the
-class hierarchy.
+Checking of class hierarchy slot type compatibility, once an instance
+had been created, thwarted the redefinition of multiple classes.
 
 Installation
 ------------
