@@ -1,4 +1,4 @@
-;;; Copyright (C) 2007, 2009-10, 2014, 2017 by William Hounslow
+;;; Copyright (C) 2007, 2009-10, 2014, 2017, 2022 by William Hounslow
 ;;; This is free software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -90,15 +90,13 @@
   (cond (control-disjunctions
          (order-first-control-disjunction e control-disjunctions tms)
          (flatmap #'(lambda (a &aux eprime)
-                      (setq eprime (add-assumption tms a e))
-                      (if eprime
-                          (prog1
-                              (backtrack eprime
-                                         (cdr control-disjunctions)
-                                         tms)
-                            (when (contradictoryp e)
-                              (return-from backtrack the-empty-stream)))
-                        the-empty-stream))
+                      (cond ((contradictoryp e)
+                             the-empty-stream)
+                            ((setq eprime (add-assumption tms a e))
+                             (backtrack eprime
+                                        (cdr control-disjunctions)
+                                        tms))
+                            (t the-empty-stream)))
                   (car control-disjunctions)))
         (t (nschedule tms e)
            (if (contradictoryp e)
